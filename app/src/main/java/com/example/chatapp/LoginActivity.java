@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
             String email = txtEmail.getText().toString();
             String password = txtPassword.getText().toString();
 
-            if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
+            if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                 Toast.makeText(LoginActivity.this, "All fields must not be empty!!!", Toast.LENGTH_SHORT).show();
             } else {
                 login(email, password);
@@ -51,8 +51,9 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
+
     private void login(String email, String password) {
-        fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task ->  {
+        fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(LoginActivity.this, "Login Successfull!!!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);

@@ -23,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
     EditText txtRegisUsername, txtRegisPassword, txtRegisEmail;
@@ -42,7 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Register");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Register");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         fAuth = FirebaseAuth.getInstance();
@@ -65,33 +66,34 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void register(String username, String password, String email) {
         fAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-           if (task.isSuccessful()) {
-               FirebaseUser firebaseUser = fAuth.getCurrentUser();
-               String userID = firebaseUser.getUid();
+            if (task.isSuccessful()) {
+                FirebaseUser firebaseUser = fAuth.getCurrentUser();
+                assert firebaseUser != null;
+                String userID = firebaseUser.getUid();
 
-               reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
+                reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
 //               Map<String, String> hashMap = new HashMap<>();
 //               hashMap.put("id", userID);
 //               hashMap.put("username", username);
 //               hashMap.put("imageURL", "default");
 
-               reference.setValue(new User(userID, username, "default")).addOnCompleteListener(task1 -> {
-                  if (task1.isSuccessful()) {
-                      Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                      startActivity(intent);
-                      Toast.makeText(RegisterActivity.this, "added db", Toast.LENGTH_SHORT).show();
-                      finish();
-                  }
-               });
-           } else {
-               //Toast.makeText(RegisterActivity.this, "Register failed!!", Toast.LENGTH_SHORT).show();
-               Log.w("TAG", "createUserWithEmail:failure", task.getException());
-               Toast.makeText(RegisterActivity.this, "Authentication failed.",
-                       Toast.LENGTH_SHORT).show();
+                reference.setValue(new User(userID, username, "default")).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        Toast.makeText(RegisterActivity.this, "added db", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+            } else {
+                //Toast.makeText(RegisterActivity.this, "Register failed!!", Toast.LENGTH_SHORT).show();
+                Log.w("TAG", "createUserWithEmail:failure", task.getException());
+                Toast.makeText(RegisterActivity.this, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();
 
-           }
+            }
         });
     }
 }

@@ -1,65 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegisterActivity">
+
     <include
         android:id="@+id/toolbar"
-        layout="@layout/actionbar_layout"/>
+        layout="@layout/actionbar_layout" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_below="@+id/toolbar"
         android:gravity="center_horizontal"
-        android:layout_below="@+id/toolbar">
+        android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
             android:text="@string/create_a_new_account"
             android:textSize="25sp"
-            android:layout_marginTop="40dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <EditText
-            android:layout_width="309dp"
-            android:layout_height="50dp"
             android:id="@+id/txtRegisUsername"
+            android:layout_width="309dp"
+            android:layout_height="50dp"
             android:layout_marginTop="40dp"
-            android:textSize="20sp"
-            android:hint="@string/username"
             android:autofillHints="@string/username"
-            android:inputType="text"/>
+            android:hint="@string/username"
+            android:inputType="text"
+            android:textSize="20sp" />
+
         <EditText
-            android:layout_width="309dp"
-            android:layout_height="50dp"
             android:id="@+id/txtRegisPassword"
-            android:layout_marginTop="20dp"
-            android:textSize="20sp"
-            android:hint="@string/password"
-            android:autofillHints="@string/password"
-            android:inputType="textPassword" />
-        <EditText
             android:layout_width="309dp"
             android:layout_height="50dp"
-            android:id="@+id/txtRegisEmail"
             android:layout_marginTop="20dp"
-            android:textSize="20sp"
-            android:hint="@string/email"
+            android:autofillHints="@string/password"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/txtRegisEmail"
+            android:layout_width="309dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
             android:autofillHints="@string/email"
-            android:inputType="textEmailAddress" />
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:textSize="20sp" />
+
         <Button
+            android:id="@+id/btnRegister"
             android:layout_width="209dp"
             android:layout_height="50dp"
-            android:text="@string/register"
             android:layout_marginTop="40dp"
-            android:id="@+id/btnRegister"
             android:backgroundTint="@color/colorPrimaryDark"
+            android:text="@string/register"
             android:textColor="#fff" />
-
 
 
     </LinearLayout>
