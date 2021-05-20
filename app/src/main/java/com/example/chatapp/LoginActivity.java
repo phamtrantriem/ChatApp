@@ -14,6 +14,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
 
     EditText txtEmail, txtPassword;
@@ -28,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Login");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Login");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         txtEmail = findViewById(R.id.txtLoginEmail);
@@ -44,7 +46,6 @@ public class LoginActivity extends AppCompatActivity {
             if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
                 Toast.makeText(LoginActivity.this, "All fields must not be empty!!!", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(LoginActivity.this, "Checked OK!!!", Toast.LENGTH_SHORT).show();
                 login(email, password);
             }
         });
@@ -53,12 +54,13 @@ public class LoginActivity extends AppCompatActivity {
     private void login(String email, String password) {
         fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task ->  {
             if (task.isSuccessful()) {
+                Toast.makeText(LoginActivity.this, "Login Successfull!!!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
             } else {
-                Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Email or password is incorrect!!!", Toast.LENGTH_SHORT).show();
             }
         });
     }

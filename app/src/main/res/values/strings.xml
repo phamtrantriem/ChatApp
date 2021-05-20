@@ -7,4 +7,5 @@
     <string name="register">Register</string>
     <string name="login">Login</string>
     <string name="chat_app">Chat App</string>
+    <string name="log_out">Log out</string>
 </resources>
