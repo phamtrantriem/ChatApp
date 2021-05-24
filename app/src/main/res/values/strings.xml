@@ -8,4 +8,7 @@
     <string name="login">Login</string>
     <string name="chat_app">Chat App</string>
     <string name="log_out">Log out</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="type_a_message">Type a message…</string>
+    <string name="button_send">Button Send</string>
 </resources>
