@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -67,12 +68,13 @@ public class RegisterActivity extends AppCompatActivity {
 
                 reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
-//               Map<String, String> hashMap = new HashMap<>();
-//               hashMap.put("id", userID);
-//               hashMap.put("username", username);
-//               hashMap.put("imageURL", "default");
+                HashMap<String, String> hashMap = new HashMap<>();
+                hashMap.put("id", userID);
+                hashMap.put("username", username);
+                hashMap.put("imageURL", "default");
+                hashMap.put("status", "offline");
 
-                reference.setValue(new User(userID, username, "default")).addOnCompleteListener(task1 -> {
+                reference.setValue(hashMap).addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
                         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -23,8 +23,8 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_image"
-                android:layout_width="30dp"
-                android:layout_height="30dp" />
+                android:layout_width="40dp"
+                android:layout_height="40dp" />
 
             <TextView
                 android:id="@+id/username"
@@ -33,6 +33,7 @@
                 android:layout_marginStart="30dp"
                 android:text="@string/username"
                 android:textColor="#fff"
+                android:textSize="20sp"
                 android:textStyle="bold" />
         </androidx.appcompat.widget.Toolbar>
 
@@ -59,10 +60,10 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@id/btn_send"
-            android:autofillHints=""
             android:background="@android:color/transparent"
             android:hint="@string/type_a_message"
-            android:inputType="text" />
+            android:inputType="text"
+            android:importantForAutofill="no" />
 
         <ImageButton
             android:id="@+id/btn_send"
@@ -71,5 +72,7 @@
             android:layout_alignParentEnd="true"
             android:background="@drawable/ic_action_name"
             android:contentDescription="@string/button_send" />
+
     </RelativeLayout>
+
 </RelativeLayout>

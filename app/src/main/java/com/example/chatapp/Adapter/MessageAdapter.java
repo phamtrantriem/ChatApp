@@ -44,7 +44,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             view = LayoutInflater.from(mContext).inflate(R.layout.chats_item_right, parent, false);
         }
         return new ViewHolder(view);
-
     }
 
     @Override
@@ -80,7 +79,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public int getItemViewType(int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         assert firebaseUser != null;
-        if (!chatList.get(position).equals(firebaseUser.getUid())) {
+        Chat chat = chatList.get(position);
+        if (chat.getSender().equals(firebaseUser.getUid())) {
             return MSG_TYPE_RIGHT;
         } else {
             return MSG_TYPE_LEFT;

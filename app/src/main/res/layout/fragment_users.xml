@@ -6,9 +6,21 @@
     android:background="#fff"
     tools:context=".Fragment.UsersFragment">
 
+    <EditText
+        android:id="@+id/search_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:autofillHints=""
+        android:hint="@string/search"
+        android:inputType="text"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_users"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp" />
 
 </FrameLayout>
