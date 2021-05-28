@@ -1,6 +1,7 @@
 package com.example.chatapp.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,12 +50,31 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
         Chat chat = chatList.get(position);
+        Log.d("MESSAGE_ADAPTER", chat.toString());
 
         holder.show_message.setText(chat.getMessage());
         if (imageURL.equals("default")) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
         } else {
             Glide.with(mContext).load(imageURL).into(holder.profile_image);
+        }
+        //check for last message
+        if (position == chatList.size()-1) {
+            if (chat.isSeen()) {
+                holder.txt_seen.setText("Seen at");
+                if (!chat.getTimeSeen().equals("")) {
+                    holder.txt_time_seen.setText(chat.getTimeSeen());
+                }
+
+            } else {
+                holder.txt_seen.setText("Delivered at");
+                if (!chat.getTimeSend().equals("")) {
+                    holder.txt_time_seen.setText(chat.getTimeSend());
+                }
+
+            }
+        } else {
+            holder.txt_seen.setVisibility(View.GONE);
         }
 
     }
@@ -65,13 +85,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView show_message;
+        public TextView show_message, txt_seen, txt_time_seen;
         public ImageView profile_image;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             show_message = itemView.findViewById(R.id.show_message);
             profile_image = itemView.findViewById(R.id.profile_image);
+            txt_seen = itemView.findViewById(R.id.txt_seen);
+            txt_time_seen = itemView.findViewById(R.id.txt_time_seen);
         }
     }
 

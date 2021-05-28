@@ -25,7 +25,21 @@
             android:textSize="18sp"
             android:textColor="@color/white"
             android:id="@+id/show_message"/>
-<!--    </RelativeLayout>-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/seen"
+            android:layout_below="@id/show_message"
+            android:id="@+id/txt_seen"
+            android:layout_marginEnd="5dp"
+            android:layout_toStartOf="@id/txt_time_seen"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/at_21_06_36_2021_05_27"
+            android:layout_below="@id/show_message"
+            android:id="@+id/txt_time_seen"
+            android:layout_alignParentEnd="true"/>
 
 </RelativeLayout>

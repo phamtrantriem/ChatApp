@@ -45,7 +45,7 @@ public class ProfileFragment extends Fragment {
 
     private static final int RESULT_OK = -1;
     CircleImageView profile_image;
-    TextView username;
+    TextView username, txtEmail, txtDescription;
 
     DatabaseReference dReference;
     StorageReference sReference;
@@ -64,6 +64,8 @@ public class ProfileFragment extends Fragment {
 
         profile_image = view.findViewById(R.id.profile_image);
         username = view.findViewById(R.id.username);
+        txtEmail = view.findViewById(R.id.txtDesEmailValue);
+        txtDescription = view.findViewById(R.id.txtDescriptionValue);
 
         fUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -80,8 +82,11 @@ public class ProfileFragment extends Fragment {
                 if (user.getImageURL().equals("default")) {
                     profile_image.setImageResource(R.mipmap.ic_launcher);
                 } else {
-                    Glide.with(getContext()).load(user.getImageURL()).into(profile_image);
+                    Glide.with(requireActivity()).load(user.getImageURL()).into(profile_image);
                 }
+                String email = user.getUsername().toLowerCase()+"@gmail.com";
+                txtEmail.setText(email);
+                txtDescription.setText("Hi!!");
             }
 
             @Override

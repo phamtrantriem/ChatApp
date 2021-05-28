@@ -6,11 +6,17 @@ public class Chat {
     private String sender;
     private String receiver;
     private String message;
+    private boolean seen;
+    private String timeSeen;
+    private String timeSend;
 
-    public Chat(String sender, String receiver, String message) {
+    public Chat(String sender, String receiver, String message, boolean isSeen, String timeSeen, String timeSend) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
+        this.seen = isSeen;
+        this.timeSeen = timeSeen;
+        this.timeSend = timeSend;
     }
 
     public Chat() {
@@ -41,13 +47,39 @@ public class Chat {
         this.message = message;
     }
 
-    @NonNull
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
+    }
+
+    public String getTimeSeen() {
+        return timeSeen;
+    }
+
+    public void setTimeSeen(String timeSeen) {
+        this.timeSeen = timeSeen;
+    }
+
+    public String getTimeSend() {
+        return timeSend;
+    }
+
+    public void setTimeSend(String timeSend) {
+        this.timeSend = timeSend;
+    }
+
     @Override
     public String toString() {
         return "Chat{" +
                 "sender='" + sender + '\'' +
                 ", receiver='" + receiver + '\'' +
                 ", message='" + message + '\'' +
+                ", isSeen=" + seen +
+                ", timeSeen='" + timeSeen + '\'' +
+                ", timeSend='" + timeSend + '\'' +
                 '}';
     }
 }

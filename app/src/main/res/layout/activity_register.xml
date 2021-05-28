@@ -22,8 +22,9 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="40dp"
             android:text="@string/create_a_new_account"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"/>
 
         <EditText
             android:id="@+id/txtRegisUsername"
