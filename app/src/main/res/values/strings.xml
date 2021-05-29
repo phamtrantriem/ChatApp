@@ -19,4 +19,6 @@
     <string name="send_email_verifier">Reset</string>
     <string name="string_reset_your_password">By clicking RESET, you will recieve an email to reset your password.</string>
     <string name="description">Description</string>
+    <string name="last_message"> ... </string>
+    <string name="time_last_message"> 00:00 </string>
 </resources>

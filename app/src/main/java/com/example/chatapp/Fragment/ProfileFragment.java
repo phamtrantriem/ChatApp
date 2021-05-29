@@ -76,17 +76,20 @@ public class ProfileFragment extends Fragment {
         dReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-                assert user != null;
-                username.setText(user.getUsername());
-                if (user.getImageURL().equals("default")) {
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
-                } else {
-                    Glide.with(requireActivity()).load(user.getImageURL()).into(profile_image);
+                if (isAdded()) {
+                    User user = snapshot.getValue(User.class);
+                    assert user != null;
+                    username.setText(user.getUsername());
+                    if (user.getImageURL().equals("default")) {
+                        profile_image.setImageResource(R.mipmap.ic_launcher);
+                    } else {
+                        Glide.with(requireContext()).load(user.getImageURL()).into(profile_image);
+                    }
+                    String email = user.getUsername().toLowerCase()+"@gmail.com";
+                    txtEmail.setText(email);
+                    txtDescription.setText("Hi!!");
                 }
-                String email = user.getUsername().toLowerCase()+"@gmail.com";
-                txtEmail.setText(email);
-                txtDescription.setText("Hi!!");
+
             }
 
             @Override

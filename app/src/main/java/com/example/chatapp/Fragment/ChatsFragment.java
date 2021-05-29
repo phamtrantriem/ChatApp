@@ -25,7 +25,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class ChatsFragment extends Fragment {
@@ -69,6 +71,8 @@ public class ChatsFragment extends Fragment {
                         usernameList.add(chat.getSender());
                     }
                 }
+                Set<String> set = new LinkedHashSet<>(usernameList);
+                usernameList = new ArrayList<>(set);
 
                 readChats();
             }
@@ -90,6 +94,7 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userList.clear();
+                ArrayList<User> listTemp;
                 //get user from db
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
@@ -99,17 +104,18 @@ public class ChatsFragment extends Fragment {
                         // compare if user in db equals user in usernamelist
                         if (user.getId().equals(userID)) {
                             //if list null
-                            if (userList.size() != 0) {
-                                //check if user existed in userList to avoid looping user
-                                for (User userinList : userList) {
-                                    if (!user.getId().equals(userinList.getId())) {
-                                        userList.add(user);
-                                    }
-                                }
-                            } else {
-                                // userlist null, add user to list
-                                userList.add(user);
-                            }
+//                            if (userList.size() != 0) {
+//                                //check if user existed in userList to avoid looping user
+//                                for (User userInList : userList) {
+//                                    if (!user.getId().equals(userInList.getId())) {
+//                                        userList.add(user);
+//                                    }
+//                                }
+//                            } else {
+//                                // userlist null, add user to list
+//                                userList.add(user);
+//                            }
+                            userList.add(user);
                         }
                     }
                 }

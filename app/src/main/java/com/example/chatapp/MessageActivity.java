@@ -81,7 +81,7 @@ public class MessageActivity extends AppCompatActivity {
 
         intent = getIntent();
 
-        final String userID = intent.getStringExtra("userID");
+        userID = intent.getStringExtra("userID");
 
         //get receiver
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -139,8 +139,6 @@ public class MessageActivity extends AppCompatActivity {
                             hashMap.put("timeSeen", formatted);
                             dataSnapshot.getRef().updateChildren(hashMap);
                         }
-
-
                     }
                 }
             }
