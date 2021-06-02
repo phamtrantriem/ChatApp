@@ -14,12 +14,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.chatapp.MainActivity;
 import com.example.chatapp.Object.User;
 import com.example.chatapp.R;
+import com.example.chatapp.StartActivity;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,7 +48,8 @@ public class ProfileFragment extends Fragment {
 
     private static final int RESULT_OK = -1;
     CircleImageView profile_image;
-    TextView username, txtEmail, txtDescription;
+    TextView username, txtEmail, txtName, txtPhone;
+    ImageButton btn_logout;
 
     DatabaseReference dReference;
     StorageReference sReference;
@@ -65,7 +69,8 @@ public class ProfileFragment extends Fragment {
         profile_image = view.findViewById(R.id.profile_image);
         username = view.findViewById(R.id.username);
         txtEmail = view.findViewById(R.id.txtDesEmailValue);
-        txtDescription = view.findViewById(R.id.txtDescriptionValue);
+        txtName = view.findViewById(R.id.txtDesNameValue);
+        txtPhone = view.findViewById(R.id.txtDesPhoneValue);
 
         fUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -80,14 +85,14 @@ public class ProfileFragment extends Fragment {
                     User user = snapshot.getValue(User.class);
                     assert user != null;
                     username.setText(user.getUsername());
+                    txtName.setText(user.getName());
+                    txtPhone.setText(user.getPhone());
+                    txtEmail.setText(user.getEmail());
                     if (user.getImageURL().equals("default")) {
                         profile_image.setImageResource(R.mipmap.ic_launcher);
                     } else {
                         Glide.with(requireContext()).load(user.getImageURL()).into(profile_image);
-                    }
-                    String email = user.getUsername().toLowerCase()+"@gmail.com";
-                    txtEmail.setText(email);
-                    txtDescription.setText("Hi!!");
+                    };
                 }
 
             }
@@ -96,6 +101,12 @@ public class ProfileFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
+        });
+
+        btn_logout = view.findViewById(R.id.btn_logout);
+        btn_logout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(getContext(), StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         });
         return view;
     }

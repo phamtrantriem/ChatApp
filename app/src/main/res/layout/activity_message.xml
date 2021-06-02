@@ -32,12 +32,12 @@
                     android:layout_centerVertical="true" />
 
                 <TextView
-                    android:layout_toStartOf="@id/btn_info"
                     android:id="@+id/username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="30dp"
+                    android:layout_toStartOf="@id/btn_info"
                     android:layout_toEndOf="@+id/profile_image"
                     android:textColor="#fff"
                     android:textSize="20sp"
@@ -47,8 +47,8 @@
                     android:id="@+id/btn_info"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginEnd="10dp"
                     android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/ic_baseline_info_24"
                     android:contentDescription="@string/button_info" />
             </RelativeLayout>
@@ -90,7 +90,8 @@
             android:background="@android:color/transparent"
             android:hint="@string/type_a_message"
             android:importantForAutofill="no"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textColor="@color/black" />
 
         <ImageButton
             android:id="@+id/btn_send"

@@ -13,9 +13,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -81,7 +79,7 @@ public class MessageActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("");
+        getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> startActivity(new Intent(MessageActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)));
 
@@ -237,17 +235,21 @@ public class MessageActivity extends AppCompatActivity {
         reference.child("Chats").push().setValue(hashMap);
 
         //add user to chat fragment
-        DatabaseReference chatReference = FirebaseDatabase.getInstance().getReference("ChatsList").child(firebaseUser.getUid()).child(userID);
-        chatReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference chatReference1 = FirebaseDatabase.getInstance().getReference("ChatsList").child(firebaseUser.getUid()).child(userID);
+        DatabaseReference chatReference2 = FirebaseDatabase.getInstance().getReference("ChatsList").child(userID).child(firebaseUser.getUid());
+        chatReference1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    chatReference.child("id").setValue(userID);
-                    chatReference.child("lastMessageDate").setValue(formatted);
+                    chatReference1.child("id").setValue(userID);
+                    chatReference1.child("lastMessageDate").setValue(formatted);
+                    chatReference2.child("id").setValue(firebaseUser.getUid());
+                    chatReference2.child("lastMessageDate").setValue(formatted);
                 } else {
                     HashMap<String, Object> hashMap = new HashMap<>();
                     hashMap.put("lastMessageDate", formatted);
-                    chatReference.updateChildren(hashMap);
+                    chatReference1.updateChildren(hashMap);
+                    chatReference2.updateChildren(hashMap);
                 }
             }
 
@@ -286,7 +288,6 @@ public class MessageActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Chat chat = dataSnapshot.getValue(Chat.class);
                     assert chat != null;
-                    Log.d("MESSAGE_ACTIVITY", chat.toString());
                     if ((chat.getReceiver().equals(myID) && chat.getSender().equals(userID)) ||
                             (chat.getReceiver().equals(userID) && chat.getSender().equals(myID))) {
                         chatList.add(chat);

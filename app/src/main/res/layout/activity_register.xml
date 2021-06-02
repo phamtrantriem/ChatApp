@@ -40,6 +40,7 @@
             android:inputType="textEmailAddress"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
+            android:textColor="@color/black"
             android:textSize="20sp" />
 
         <EditText
@@ -55,6 +56,7 @@
             android:inputType="textPassword"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
+            android:textColor="@color/black"
             android:textSize="20sp" />
 
         <EditText
@@ -70,6 +72,7 @@
             android:inputType="textPassword"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
+            android:textColor="@color/black"
             android:textSize="20sp" />
 
         <EditText
@@ -85,6 +88,7 @@
             android:inputType="text"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
+            android:textColor="@color/black"
             android:textSize="20sp" />
 
         <EditText
@@ -100,6 +104,7 @@
             android:inputType="text"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
+            android:textColor="@color/black"
             android:textSize="20sp" />
 
         <LinearLayout
@@ -113,6 +118,7 @@
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
+                android:textColor="@color/black"
                 app:ccp_autoDetectCountry="true"
                 app:ccp_autoFormatNumber="true"
                 app:ccp_contentColor="@color/colorPrimaryDark"
@@ -135,6 +141,7 @@
                 android:inputType="phone"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
+                android:textColor="@color/black"
                 android:textSize="20sp" />
         </LinearLayout>
 
