@@ -43,7 +43,8 @@
             android:background="@color/colorPrimaryDark"
             app:tabIndicatorColor="#fff"
             app:tabSelectedTextColor="#fff"
-            app:tabTextColor="#fff" />
+            app:tabTextColor="#fff"
+            android:layout_gravity="bottom"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

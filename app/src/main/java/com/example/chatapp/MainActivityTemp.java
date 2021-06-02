@@ -1,5 +1,11 @@
 package com.example.chatapp;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -7,12 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.chatapp.Fragment.ChatsFragment;
@@ -35,7 +35,7 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivityTemp extends AppCompatActivity {
 
     CircleImageView profile_image;
     TextView username;
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser == null) {
-            startActivity(new Intent(MainActivity.this, StartActivity.class));
+            startActivity(new Intent(MainActivityTemp.this, StartActivity.class));
             finish();
         }
     }
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.logout) {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(MainActivity.this, StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            startActivity(new Intent(MainActivityTemp.this, StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             finish();
             return true;
         }

@@ -13,8 +13,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatApp"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ResetPasswordActivity"
-            android:parentActivityName=".LoginActivity"/>
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:parentActivityName=".LoginActivity" />
         <activity android:name=".MessageActivity" />
         <activity android:name=".MainActivity" />
         <activity
@@ -23,13 +30,15 @@
         <activity
             android:name=".RegisterActivity"
             android:parentActivityName=".StartActivity" />
-        <activity android:name=".StartActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".StartActivity"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+        <service
+            android:name=".Notification.MyFirebaseInstanceIDService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
-        </activity>
+        </service>
     </application>
 
 </manifest>
