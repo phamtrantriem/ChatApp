@@ -4,17 +4,22 @@ public class User {
     private String id;
     private String username;
     private String imageURL;
+    private String name;
+    private String email;
+    private String phone;
     private String status;
 
-    public User(String id, String username, String imageURL, String status) {
+    public User(String id, String username, String imageURL, String name, String email, String phone, String status) {
         this.id = id;
         this.username = username;
         this.imageURL = imageURL;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
         this.status = status;
     }
 
     public User() {
-
     }
 
     public String getId() {
@@ -41,6 +46,30 @@ public class User {
         this.imageURL = imageURL;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -54,6 +83,11 @@ public class User {
         return "User{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
+                ", imageURL='" + imageURL + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

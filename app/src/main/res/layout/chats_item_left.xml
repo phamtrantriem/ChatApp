@@ -18,6 +18,7 @@
         android:layout_marginStart="10dp"
         android:layout_toEndOf="@id/profile_image"
         android:background="@drawable/background_left"
+        android:maxWidth="320dp"
         android:padding="12dp"
         android:text="@string/hello_blank_fragment"
         android:textSize="18sp" />

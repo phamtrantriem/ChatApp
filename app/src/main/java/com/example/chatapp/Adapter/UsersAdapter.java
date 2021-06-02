@@ -72,7 +72,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                 holder.img_off.setVisibility(View.VISIBLE);
             }
         } else {
-            holder.last_message.setVisibility(View.GONE);
+            holder.last_message.setText(user.getName());
             holder.img_onl.setVisibility(View.GONE);
             holder.img_off.setVisibility(View.GONE);
             holder.time_last_message.setVisibility(View.GONE);

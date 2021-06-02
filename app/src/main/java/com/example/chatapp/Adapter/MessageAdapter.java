@@ -58,23 +58,25 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         } else {
             Glide.with(mContext).load(imageURL).into(holder.profile_image);
         }
-        //check for last message
+        //check for last message and show the time delivering or seen
         if (position == chatList.size()-1) {
             if (chat.isSeen()) {
-                holder.txt_seen.setText("Seen at");
+                String string = "Seen at";
+                holder.txt_seen.setText(string);
+                holder.txt_seen.setVisibility(View.VISIBLE);
                 if (!chat.getTimeSeen().equals("")) {
                     holder.txt_time_seen.setText(chat.getTimeSeen());
+                    holder.txt_time_seen.setVisibility(View.VISIBLE);
                 }
-
             } else {
-                holder.txt_seen.setText("Delivered at");
+                String string = "Delivered at";
+                holder.txt_seen.setText(string);
+                holder.txt_seen.setVisibility(View.VISIBLE);
                 if (!chat.getTimeSend().equals("")) {
                     holder.txt_time_seen.setText(chat.getTimeSend());
+                    holder.txt_time_seen.setVisibility(View.VISIBLE);
                 }
-
             }
-        } else {
-            holder.txt_seen.setVisibility(View.GONE);
         }
 
     }

@@ -133,10 +133,13 @@ public class MessageActivity extends AppCompatActivity {
             dialog.setCanceledOnTouchOutside(true);
             dialog.setContentView(R.layout.dialog_infomation);
 
-            TextView dialog_username = dialog.findViewById(R.id.username);
-            TextView dialog_email = dialog.findViewById(R.id.txtDesEmailValue);
             ImageView dialog_image = dialog.findViewById(R.id.profile_image);
+            TextView dialog_username = dialog.findViewById(R.id.username);
+            TextView dialog_name = dialog.findViewById(R.id.txtDesNameValue);
+            TextView dialog_email = dialog.findViewById(R.id.txtDesEmailValue);
+            TextView dialog_phone = dialog.findViewById(R.id.txtDesPhoneValue);
             ImageButton dialog_back = dialog.findViewById(R.id.btn_dialog_back);
+
 
             ref = FirebaseDatabase.getInstance().getReference("Users").child(userID);
             ref.addValueEventListener(new ValueEventListener() {
@@ -146,8 +149,9 @@ public class MessageActivity extends AppCompatActivity {
                     assert user != null;
 
                     dialog_username.setText(user.getUsername());
-                    String email = user.getUsername()+"@gmail.com";
-                    dialog_email.setText(email);
+                    dialog_name.setText(user.getName());
+                    dialog_phone.setText(user.getPhone());
+                    dialog_email.setText(user.getEmail());
                     if (user.getImageURL() != null && user.getImageURL().equals("default")) {
                         dialog_image.setImageResource(R.mipmap.ic_launcher);
                     } else {
@@ -271,45 +275,6 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void sendNotification(String receiver, String username, String msg) {
-        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
-        Query query = tokens.orderByKey().equalTo(receiver);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Token token = dataSnapshot.getValue(Token.class);
-                    Data data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher, username + ": " + msg, "New message", userID);
-
-                    assert token != null;
-                    Sender sender = new Sender(data, token.getToken());
-
-//                    apiService.sendNotification(sender)
-//                            .enqueue(new Callback<MyResponse>() {
-//                                @Override
-//                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-//                                    if (response.code() == 200) {
-//                                        if (response.body().success == 1) {
-//                                            Toast.makeText(MessageActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-//                                        }
-//                                    };
-//                                }
-//
-//                                @Override
-//                                public void onFailure(Call<MyResponse> call, Throwable t) {
-//
-//                                }
-//                            });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
     private void readMessage(String myID, String userID, String imageURL) {
         chatList = new ArrayList<>();
 
@@ -362,5 +327,45 @@ public class MessageActivity extends AppCompatActivity {
         }
 
         status("offline");
+    }
+
+
+    private void sendNotification(String receiver, String username, String msg) {
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query = tokens.orderByKey().equalTo(receiver);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Token token = dataSnapshot.getValue(Token.class);
+                    Data data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher, username + ": " + msg, "New message", userID);
+
+                    assert token != null;
+                    Sender sender = new Sender(data, token.getToken());
+
+//                    apiService.sendNotification(sender)
+//                            .enqueue(new Callback<MyResponse>() {
+//                                @Override
+//                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+//                                    if (response.code() == 200) {
+//                                        if (response.body().success == 1) {
+//                                            Toast.makeText(MessageActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    };
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<MyResponse> call, Throwable t) {
+//
+//                                }
+//                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

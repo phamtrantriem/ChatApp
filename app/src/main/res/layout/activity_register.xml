@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,18 +23,23 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="40dp"
             android:text="@string/create_a_new_account"
+            android:textColor="@color/colorPrimary"
             android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/txtRegisUsername"
+            android:id="@+id/txtRegisEmail"
             android:layout_width="309dp"
             android:layout_height="50dp"
             android:layout_marginTop="40dp"
-            android:autofillHints="@string/username"
-            android:hint="@string/username"
-            android:inputType="text"
+            android:autofillHints="@string/email"
+            android:background="@drawable/custom_input"
+            android:drawableStart="@drawable/ic_baseline_email_24"
+            android:drawablePadding="15dp"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:textSize="20sp" />
 
         <EditText
@@ -42,26 +48,105 @@
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
             android:autofillHints="@string/password"
+            android:background="@drawable/custom_input"
+            android:drawableStart="@drawable/ic_baseline_lock_24"
+            android:drawablePadding="15dp"
             android:hint="@string/password"
             android:inputType="textPassword"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/txtRegisEmail"
+            android:id="@+id/txtReRegisPassword"
             android:layout_width="309dp"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
-            android:autofillHints="@string/email"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress"
+            android:background="@drawable/custom_input"
+            android:drawableStart="@drawable/ic_baseline_lock_24"
+            android:drawablePadding="15dp"
+            android:hint="@string/re_password"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/txtRegisUsername"
+            android:layout_width="309dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:autofillHints="@string/username"
+            android:background="@drawable/custom_input"
+            android:drawableStart="@drawable/ic_baseline_person_24"
+            android:drawablePadding="15dp"
+            android:hint="@string/username"
+            android:inputType="text"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/txtRegisFullName"
+            android:layout_width="309dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:autofillHints="@string/full_name"
+            android:background="@drawable/custom_input"
+            android:drawableStart="@drawable/ic_baseline_drive_file_rename_outline_24"
+            android:drawablePadding="15dp"
+            android:hint="@string/full_name"
+            android:inputType="text"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/countryCodePicker"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                app:ccp_autoDetectCountry="true"
+                app:ccp_autoFormatNumber="true"
+                app:ccp_contentColor="@color/colorPrimaryDark"
+                app:ccp_countryPreference="VN"
+                app:ccp_defaultNameCode="VN"
+                app:ccp_padding="9dp"
+                app:ccp_rememberLastSelection="true"
+                app:ccp_showFlag="false"
+                app:ccp_textGravity="CENTER" />
+
+            <EditText
+                android:id="@+id/txtRegisPhone"
+                android:layout_width="209dp"
+                android:layout_height="50dp"
+                android:autofillHints="@string/phone_number"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/ic_baseline_local_phone_24"
+                android:drawablePadding="15dp"
+                android:hint="@string/phone_number"
+                android:inputType="phone"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:textSize="20sp" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="209dp"
             android:layout_height="50dp"
             android:layout_marginTop="40dp"
-            android:backgroundTint="@color/colorPrimaryDark"
+            android:backgroundTint="@color/colorPrimary"
+            android:drawablePadding="15dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:text="@string/register"
             android:textColor="#fff" />
 

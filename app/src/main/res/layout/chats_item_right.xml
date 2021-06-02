@@ -4,42 +4,46 @@
     android:layout_height="wrap_content"
     android:padding="8dp">
 
-<!--    <RelativeLayout-->
-<!--        android:layout_width="300dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentEnd="true">-->
+    <!--    <RelativeLayout-->
+    <!--        android:layout_width="300dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_alignParentEnd="true">-->
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/background_right"
-            android:text="@string/hello_blank_fragment"
-            android:padding="12dp"
-            android:textSize="18sp"
-            android:textColor="@color/white"
-            android:id="@+id/show_message"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/seen"
-            android:layout_below="@id/show_message"
-            android:id="@+id/txt_seen"
-            android:layout_marginEnd="5dp"
-            android:layout_toStartOf="@id/txt_time_seen"/>
+    <TextView
+        android:id="@+id/show_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/background_right"
+        android:maxWidth="320dp"
+        android:padding="12dp"
+        android:text="@string/hello_blank_fragment"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/at_21_06_36_2021_05_27"
-            android:layout_below="@id/show_message"
-            android:id="@+id/txt_time_seen"
-            android:layout_alignParentEnd="true"/>
+    <TextView
+        android:id="@+id/txt_seen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/show_message"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@id/txt_time_seen"
+        android:text="@string/seen"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/txt_time_seen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/show_message"
+        android:layout_alignParentEnd="true"
+        android:text="@string/at_21_06_36_2021_05_27"
+        android:visibility="gone" />
 
 </RelativeLayout>
