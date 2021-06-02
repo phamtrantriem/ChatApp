@@ -9,10 +9,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.chatapp.Adapter.UsersAdapter;
 import com.example.chatapp.Object.Chat;
@@ -25,6 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.sql.DatabaseMetaData;
@@ -49,6 +53,8 @@ public class ChatsFragment extends Fragment {
 
     FirebaseUser fUser;
     DatabaseReference reference;
+
+    EditText search;
 
     private  List<ChatsList> sortedUserList;
 
@@ -76,6 +82,11 @@ public class ChatsFragment extends Fragment {
                     ChatsList chatsList = dataSnapshot.getValue(ChatsList.class);
                     sortedUserList.add(chatsList);
                 }
+                Collections.sort(sortedUserList, (o1, o2) -> {
+                    if (o1.getLastMessageDate() == null || o2.getLastMessageDate() == null)
+                        return 0;
+                    return o2.getLastMessageDate().compareTo(o1.getLastMessageDate());
+                });
                 readChats();
             }
 
@@ -85,20 +96,63 @@ public class ChatsFragment extends Fragment {
             }
         });
 
+        search = view.findViewById(R.id.search_message);
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                search(s.toString().toLowerCase());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         return view;
+    }
+
+    private void search(String s) {
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        Query query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("username").startAt(s).endAt(s+"\uf8ff");
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (userList != null) {
+                    userList.clear();
+                }
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    User user = dataSnapshot.getValue(User.class);
+
+                    assert user != null;
+                    assert fUser != null;
+                    for (ChatsList chatsList : sortedUserList) {
+                        if (!user.getId().equals((fUser.getUid())) && user.getId().equals(chatsList.getId()) ) {
+                            userList.add(user);
+                        }
+                    }
+
+                }
+                usersAdapter = new UsersAdapter(getContext(), userList, true);
+                recyclerView.setAdapter(usersAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void readChats() {
         userList = new ArrayList<>();
-
-        Collections.sort(sortedUserList, (o1, o2) -> {
-            if (o1.getLastMessageDate() == null || o2.getLastMessageDate() == null)
-                return 0;
-            return o2.getLastMessageDate().compareTo(o1.getLastMessageDate());
-        });
-
-        Log.d("CHAT_FRAGMENT", sortedUserList.toString());
-
 
         reference = FirebaseDatabase.getInstance().getReference("Users");
         reference.addValueEventListener(new ValueEventListener() {
@@ -126,49 +180,4 @@ public class ChatsFragment extends Fragment {
             }
         });
     }
-
-//    private void readChats1() {
-//        userList = new ArrayList<>();
-//
-//        reference = FirebaseDatabase.getInstance().getReference("Users");
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                userList.clear();
-//                ArrayList<User> listTemp;
-//                //get user from db
-//                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-//                    User user = dataSnapshot.getValue(User.class);
-//                    assert user != null;
-                    //get userID in relationship from usernamelist
-//                    for (String userID : usernameList) {
-                        // compare if user in db equals user in usernamelist
-//                        if (user.getId().equals(userID)) {
-                            //if list null
-//                            if (userList.size() != 0) {
-//                                //check if user existed in userList to avoid looping user
-//                                for (User userInList : userList) {
-//                                    if (!user.getId().equals(userInList.getId())) {
-//                                        userList.add(user);
-//                                    }
-//                                }
-//                            } else {
-//                                // userlist null, add user to list
-//                                userList.add(user);
-//                            }
-//                            userList.add(user);
-//                        }
-//                    }
-//                }
-
-//                usersAdapter = new UsersAdapter(getContext(), userList, true);
-//                recyclerView.setAdapter(usersAdapter);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
 }

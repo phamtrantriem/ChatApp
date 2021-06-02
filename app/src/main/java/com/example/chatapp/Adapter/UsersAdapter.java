@@ -75,6 +75,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
             holder.last_message.setVisibility(View.GONE);
             holder.img_onl.setVisibility(View.GONE);
             holder.img_off.setVisibility(View.GONE);
+            holder.time_last_message.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -135,6 +136,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                     switch (lastMessage) {
                         case "default" :
                             last_message.setText("");
+                            time_last_message.setText("");
                             break;
                         default:
                             if (userWithLastMessageID.equals(fUser.getUid())) {

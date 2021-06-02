@@ -96,8 +96,8 @@ public class MainActivityTemp extends AppCompatActivity {
             }
         });
 
-        final TabLayout tabLayout = findViewById(R.id.tab_layout);
-        final ViewPager viewPager = findViewById(R.id.viewpager);
+        //final TabLayout tabLayout = findViewById(R.id.tab_layout);
+        //final ViewPager viewPager = findViewById(R.id.viewpager);
 
 
 
@@ -126,8 +126,8 @@ public class MainActivityTemp extends AppCompatActivity {
                 viewPagerAdapter.addFragment(new UsersFragment(), "Users");
                 viewPagerAdapter.addFragment(new ProfileFragment(), "Profile");
 
-                viewPager.setAdapter(viewPagerAdapter);
-                tabLayout.setupWithViewPager(viewPager);
+               // viewPager.setAdapter(viewPagerAdapter);
+              //  tabLayout.setupWithViewPager(viewPager);
 
             }
 

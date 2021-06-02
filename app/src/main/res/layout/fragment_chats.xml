@@ -6,8 +6,19 @@
     android:background="#fff"
     tools:context=".Fragment.ChatsFragment">
 
+    <EditText
+        android:id="@+id/search_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:hint="@string/search"
+        android:inputType="text"
+        android:paddingStart="15dp"
+        android:paddingLeft="15dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp" />
 </FrameLayout>

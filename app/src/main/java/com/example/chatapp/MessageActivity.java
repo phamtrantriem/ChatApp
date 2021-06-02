@@ -7,12 +7,18 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,10 +56,10 @@ public class MessageActivity extends AppCompatActivity {
     TextView username;
 
     FirebaseUser firebaseUser;
-    DatabaseReference reference;
+    DatabaseReference reference, ref;
 
     Intent intent;
-    ImageButton btn_send;
+    ImageButton btn_send, btn_info;
     EditText txt_send;
 
     ValueEventListener seenListener;
@@ -91,6 +97,7 @@ public class MessageActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         btn_send = findViewById(R.id.btn_send);
         txt_send = findViewById(R.id.txt_message);
+        btn_info = findViewById(R.id.btn_info);
 
         intent = getIntent();
 
@@ -117,6 +124,48 @@ public class MessageActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
+        //info of user
+        btn_info.setOnClickListener(v -> {
+            final Dialog dialog = new Dialog(MessageActivity.this, android.R.style.Theme_Black_NoTitleBar);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(100, 0, 0, 0)));
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCanceledOnTouchOutside(true);
+            dialog.setContentView(R.layout.dialog_infomation);
+
+            TextView dialog_username = dialog.findViewById(R.id.username);
+            TextView dialog_email = dialog.findViewById(R.id.txtDesEmailValue);
+            ImageView dialog_image = dialog.findViewById(R.id.profile_image);
+            ImageButton dialog_back = dialog.findViewById(R.id.btn_dialog_back);
+
+            ref = FirebaseDatabase.getInstance().getReference("Users").child(userID);
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User user = snapshot.getValue(User.class);
+                    assert user != null;
+
+                    dialog_username.setText(user.getUsername());
+                    String email = user.getUsername()+"@gmail.com";
+                    dialog_email.setText(email);
+                    if (user.getImageURL() != null && user.getImageURL().equals("default")) {
+                        dialog_image.setImageResource(R.mipmap.ic_launcher);
+                    } else {
+                        Glide.with(getApplicationContext()).load(user.getImageURL()).into(dialog_image);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+            dialog_back.setOnClickListener(v1 -> dialog.dismiss());
+
+            dialog.show();
+        });
+
         //send massage
         btn_send.setOnClickListener(v -> {
             String msg = txt_send.getText().toString();

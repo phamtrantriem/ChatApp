@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
@@ -17,9 +18,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.chatapp.Fragment.ChatsFragment;
 import com.example.chatapp.Fragment.ProfileFragment;
+import com.example.chatapp.Fragment.StoryFragment;
 import com.example.chatapp.Fragment.UsersFragment;
 import com.example.chatapp.Object.Chat;
 import com.example.chatapp.Object.User;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -64,11 +67,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         profile_image = findViewById(R.id.profile_image);
         username = findViewById(R.id.username);
 
+        //show own username and profile picture
         FirebaseAuth.getInstance().addAuthStateListener(firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
@@ -96,10 +99,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final TabLayout tabLayout = findViewById(R.id.tab_layout);
-        final ViewPager viewPager = findViewById(R.id.viewpager);
-
-
+        //final TabLayout tabLayout = findViewById(R.id.tab_layout);
+        //final ViewPager viewPager = findViewById(R.id.viewpager);
+        final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        //show fragment
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int idFmt = item.getItemId();
+            if (idFmt == R.id.nav_message) {
+                setFragment(new ChatsFragment());
+                return true;
+            } else if (idFmt == R.id.nav_search) {
+                setFragment(new UsersFragment());
+                return true;
+            } else if (idFmt == R.id.nav_story) {
+                setFragment(new StoryFragment());
+                return true;
+            } else if (idFmt == R.id.nav_profile) {
+                setFragment(new ProfileFragment());
+                return true;
+            }
+            return false;
+        });
+        bottomNavigationView.setSelectedItemId(R.id.nav_message);
 
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
@@ -126,8 +147,8 @@ public class MainActivity extends AppCompatActivity {
                 viewPagerAdapter.addFragment(new UsersFragment(), "Users");
                 viewPagerAdapter.addFragment(new ProfileFragment(), "Profile");
 
-                viewPager.setAdapter(viewPagerAdapter);
-                tabLayout.setupWithViewPager(viewPager);
+                //viewPager.setAdapter(viewPagerAdapter);
+                //tabLayout.setupWithViewPager(viewPager);
 
             }
 
@@ -136,6 +157,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void setFragment(Fragment fragment) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_frame, fragment);
+        ft.commit();
     }
 
     @Override

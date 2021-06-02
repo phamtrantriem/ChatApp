@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item
+        android:id="@+id/nav_message"
+        android:icon="@drawable/ic_baseline_chat_24"
+        android:title="@string/message" />
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/ic_baseline_person_search_24"
+        android:title="@string/users" />
+    <item
+        android:id="@+id/nav_story"
+        android:icon="@drawable/ic_baseline_video_camera_back_24"
+        android:title="@string/story" />
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/profile" />
 </menu>
