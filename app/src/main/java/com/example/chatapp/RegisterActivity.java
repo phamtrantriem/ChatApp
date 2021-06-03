@@ -12,10 +12,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.chatapp.Object.User;
+import com.example.chatapp.Service.FirebaseNotificationService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.hbb20.CountryCodePicker;
 
 import java.util.HashMap;
@@ -25,6 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText txtRegisUsername, txtRegisPassword, txtRegisEmail, txtReRegisPassword, txtRegisFullName, txtRegisPhone;
     Button btnRegister;
     CountryCodePicker ccp;
+    String token;
 
     FirebaseAuth fAuth;
     DatabaseReference reference;
@@ -79,6 +82,22 @@ public class RegisterActivity extends AppCompatActivity {
 
                 reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
+                token = "";
+                //set token
+                FirebaseMessaging.getInstance().getToken()
+                        .addOnCompleteListener(task1 -> {
+                            if (!task.isSuccessful()) {
+                                Log.w("MAIN_ACTIVITY", "Fetching FCM registration token failed", task.getException());
+                                return;
+                            }
+
+                            // Get new FCM registration token
+                            token = task1.getResult();
+                            FirebaseNotificationService firebaseNotificationService = new FirebaseNotificationService();
+                            assert token != null;
+                            firebaseNotificationService.onNewToken(token);
+                        });
+
                 HashMap<String, String> hashMap = new HashMap<>();
                 hashMap.put("id", userID);
                 hashMap.put("username", username);
@@ -87,6 +106,8 @@ public class RegisterActivity extends AppCompatActivity {
                 hashMap.put("email", email);
                 hashMap.put("phone", phone);
                 hashMap.put("status", "offline");
+                hashMap.put("typing", "not");
+                hashMap.put("token", token);
 
                 reference.setValue(hashMap).addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {

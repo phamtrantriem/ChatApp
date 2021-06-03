@@ -31,18 +31,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.sql.DatabaseMetaData;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 
 public class ChatsFragment extends Fragment {
@@ -71,6 +63,7 @@ public class ChatsFragment extends Fragment {
 
         sortedUserList = new ArrayList<>();
 
+        //get list user on contact
         reference = FirebaseDatabase.getInstance().getReference("ChatsList").child(fUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -83,9 +76,14 @@ public class ChatsFragment extends Fragment {
                     sortedUserList.add(chatsList);
                 }
                 Collections.sort(sortedUserList, (o1, o2) -> {
+                    String[] str1 = o1.getLastMessageDate().split(" ");
+                    String[] str2 = o2.getLastMessageDate().split(" ");
                     if (o1.getLastMessageDate() == null || o2.getLastMessageDate() == null)
                         return 0;
-                    return o2.getLastMessageDate().compareTo(o1.getLastMessageDate());
+                    if (str2[1].compareTo(str1[1]) == 0){
+                        return str2[0].compareTo(str1[0]);
+                    }
+                    return str2[1].compareTo(str1[1]);
                 });
                 readChats();
             }
@@ -96,12 +94,11 @@ public class ChatsFragment extends Fragment {
             }
         });
 
+        //search user
         search = view.findViewById(R.id.search_message);
         search.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -109,9 +106,7 @@ public class ChatsFragment extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
         return view;
@@ -120,7 +115,7 @@ public class ChatsFragment extends Fragment {
     private void search(String s) {
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        Query query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("username").startAt(s).endAt(s+"\uf8ff");
+        Query query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("username");
 
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -134,8 +129,10 @@ public class ChatsFragment extends Fragment {
                     assert user != null;
                     assert fUser != null;
                     for (ChatsList chatsList : sortedUserList) {
-                        if (!user.getId().equals((fUser.getUid())) && user.getId().equals(chatsList.getId()) ) {
-                            userList.add(user);
+                        if (user.getUsername().contains(s)) {
+                            if (!user.getId().equals((fUser.getUid())) && user.getId().equals(chatsList.getId()) ) {
+                                userList.add(user);
+                            }
                         }
                     }
 
@@ -159,11 +156,12 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userList.clear();
-
                 for (ChatsList chatsList : sortedUserList) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = dataSnapshot.getValue(User.class);
+
                         assert user != null;
+                        Log.d("CHATS_FRAGMENT", chatsList.toString());
                         if (user.getId().equals(chatsList.getId())) {
                             userList.add(user);
                         }

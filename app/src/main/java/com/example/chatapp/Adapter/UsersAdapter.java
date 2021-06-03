@@ -80,8 +80,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(mContext, MessageActivity.class);
-            intent.putExtra("userID", user.getId());
-            Toast.makeText(mContext, "userID" + user.getId(), Toast.LENGTH_SHORT).show();
+            intent.putExtra("chatID", user.getId());
             mContext.startActivity(intent);
         });
     }
@@ -133,24 +132,21 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                             isSeen = chat.isSeen();
                         }
                     }
-                    switch (lastMessage) {
-                        case "default" :
-                            last_message.setText("");
-                            time_last_message.setText("");
-                            break;
-                        default:
-                            if (userWithLastMessageID.equals(fUser.getUid())) {
-                                last_message.setText("You: " + lastMessage);
-                            } else {
-                                if (!isSeen) {
-                                    username.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
-                                    last_message.setTypeface(Typeface.DEFAULT_BOLD);
-                                }
-                                last_message.setText(lastMessage);
+                    if ("default".equals(lastMessage)) {
+                        last_message.setText("");
+                        time_last_message.setText("");
+                    } else {
+                        if (userWithLastMessageID.equals(fUser.getUid())) {
+                            String last_msg = "You: " + lastMessage;
+                            last_message.setText(last_msg);
+                        } else {
+                            if (!isSeen) {
+                                username.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
+                                last_message.setTypeface(Typeface.DEFAULT_BOLD);
                             }
-
-                            time_last_message.setText(timeLastMessage);
-                            break;
+                            last_message.setText(lastMessage);
+                        }
+                        time_last_message.setText(timeLastMessage);
                     }
                     lastMessage = "default";
                     userWithLastMessageID = "";
@@ -158,9 +154,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 }

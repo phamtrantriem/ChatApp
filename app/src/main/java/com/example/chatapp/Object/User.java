@@ -8,8 +8,10 @@ public class User {
     private String email;
     private String phone;
     private String status;
+    private String typing;
+    private String token;
 
-    public User(String id, String username, String imageURL, String name, String email, String phone, String status) {
+    public User(String id, String username, String imageURL, String name, String email, String phone, String status, String typing) {
         this.id = id;
         this.username = username;
         this.imageURL = imageURL;
@@ -17,6 +19,8 @@ public class User {
         this.email = email;
         this.phone = phone;
         this.status = status;
+        this.typing = typing;
+
     }
 
     public User() {
@@ -78,6 +82,14 @@ public class User {
         this.status = status;
     }
 
+    public String getTyping() {
+        return typing;
+    }
+
+    public void setTyping(String typing) {
+        this.typing = typing;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -88,6 +100,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", status='" + status + '\'' +
+                ", typing='" + typing + '\'' +
                 '}';
     }
 }

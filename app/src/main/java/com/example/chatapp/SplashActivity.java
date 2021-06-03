@@ -1,13 +1,19 @@
 package com.example.chatapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.chatapp.Service.FirebaseNotificationService;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.installations.InstallationTokenResult;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -28,6 +34,16 @@ public class SplashActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstallationTokenResult> task) {
+                        if(!task.isSuccessful()){
+                            return;
+                        }
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+                    }
+                });
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();

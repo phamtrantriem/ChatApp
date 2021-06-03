@@ -9,8 +9,13 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -22,6 +27,9 @@ import com.example.chatapp.Fragment.StoryFragment;
 import com.example.chatapp.Fragment.UsersFragment;
 import com.example.chatapp.Object.Chat;
 import com.example.chatapp.Object.User;
+import com.example.chatapp.Service.FirebaseNotificationService;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +39,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
 
     int unRead;
 
+    ProgressDialog progressDialog;
+    CountDownTimer countDownTimer;
+    int i = 0;
+
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -64,6 +79,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("Please wait ...");
+        progressDialog.setCancelable(false);
+        progressDialog.setProgress(i);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -71,11 +93,31 @@ public class MainActivity extends AppCompatActivity {
         profile_image = findViewById(R.id.profile_image);
         username = findViewById(R.id.username);
 
+        //token
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("MAIN_ACTIVITY", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    // Get new FCM registration token
+                    String token = task.getResult();
+                    FirebaseNotificationService firebaseNotificationService = new FirebaseNotificationService();
+                    assert token != null;
+                    firebaseNotificationService.onNewToken(token);
+                    // Log and toast
+                    Log.d("TOKEN", token);
+                });
+
+//        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+
         //show own username and profile picture
         FirebaseAuth.getInstance().addAuthStateListener(firebaseAuth -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            if (user != null) {
-                reference = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
+            FirebaseUser fUser = firebaseAuth.getCurrentUser();
+            if (fUser != null) {
+                reference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid());
                 reference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -84,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
                         if (user.getUsername() != null) {
                             username.setText(user.getUsername());
                         }
+
                         if (user.getImageURL().equals("default")) {
                             profile_image.setImageResource(R.mipmap.ic_launcher);
                         } else {
@@ -99,8 +142,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //final TabLayout tabLayout = findViewById(R.id.tab_layout);
-        //final ViewPager viewPager = findViewById(R.id.viewpager);
         final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         //show fragment
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
@@ -121,6 +162,19 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
         bottomNavigationView.setSelectedItemId(R.id.nav_message);
+
+        progressDialog.show();
+        countDownTimer = new CountDownTimer(1500,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                progressDialog.setMessage("Loading...");
+            }
+
+            @Override
+            public void onFinish() {
+                progressDialog.dismiss();
+            }
+        }.start();
 
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
@@ -146,9 +200,6 @@ public class MainActivity extends AppCompatActivity {
 
                 viewPagerAdapter.addFragment(new UsersFragment(), "Users");
                 viewPagerAdapter.addFragment(new ProfileFragment(), "Profile");
-
-                //viewPager.setAdapter(viewPagerAdapter);
-                //tabLayout.setupWithViewPager(viewPager);
 
             }
 

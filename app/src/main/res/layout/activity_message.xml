@@ -60,9 +60,20 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_messages"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@id/bottom_layout"
         android:layout_below="@id/bar_layout" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/typing"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_marginStart="10dp"
+        android:visibility="gone"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/typing" />
 
     <RelativeLayout
         android:id="@+id/bottom_layout"
@@ -73,7 +84,7 @@
         android:padding="5dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/send_file"
+            android:id="@+id/btn_send_file"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_baseline_add_to_photos_24" />
@@ -86,7 +97,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_toStartOf="@id/btn_send"
-            android:layout_toEndOf="@id/send_file"
+            android:layout_toEndOf="@id/btn_send_file"
             android:background="@android:color/transparent"
             android:hint="@string/type_a_message"
             android:importantForAutofill="no"

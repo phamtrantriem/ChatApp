@@ -13,6 +13,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,16 +24,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.example.chatapp.Adapter.MessageAdapter;
-import com.example.chatapp.Fragment.APIService;
+import com.example.chatapp.Notification.APIService;
 import com.example.chatapp.Notification.Client;
 import com.example.chatapp.Notification.Data;
-import com.example.chatapp.Notification.MyResponse;
 import com.example.chatapp.Notification.Sender;
 import com.example.chatapp.Notification.Token;
 import com.example.chatapp.Object.Chat;
 import com.example.chatapp.Object.User;
+import com.example.chatapp.Service.Constaints;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,11 +50,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -58,6 +73,8 @@ public class MessageActivity extends AppCompatActivity {
 
     Intent intent;
     ImageButton btn_send, btn_info;
+    CircleImageView btn_send_file;
+    LottieAnimationView typingAnimation;
     EditText txt_send;
 
     ValueEventListener seenListener;
@@ -66,6 +83,8 @@ public class MessageActivity extends AppCompatActivity {
     List<Chat> chatList;
 
     String userID;
+    String chatID;
+    String token;
 
     RecyclerView recyclerView;
 
@@ -93,13 +112,21 @@ public class MessageActivity extends AppCompatActivity {
 
         profile_image = findViewById(R.id.profile_image);
         username = findViewById(R.id.username);
-        btn_send = findViewById(R.id.btn_send);
         txt_send = findViewById(R.id.txt_message);
         btn_info = findViewById(R.id.btn_info);
+        btn_send = findViewById(R.id.btn_send);
+        btn_send_file = findViewById(R.id.btn_send_file);
 
         intent = getIntent();
+        if (intent.hasExtra("chatID")) {
+            chatID = intent.getStringExtra("chatID");
+            userID = chatID;
+        } else {
+            userID = intent.getStringExtra("userID");
+            chatID = userID;
+        }
 
-        userID = intent.getStringExtra("userID");
+
 
         //get receiver
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -119,8 +146,7 @@ public class MessageActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
+            public void onCancelled(@NonNull DatabaseError error) { }
         });
 
         //info of user
@@ -138,14 +164,12 @@ public class MessageActivity extends AppCompatActivity {
             TextView dialog_phone = dialog.findViewById(R.id.txtDesPhoneValue);
             ImageButton dialog_back = dialog.findViewById(R.id.btn_dialog_back);
 
-
             ref = FirebaseDatabase.getInstance().getReference("Users").child(userID);
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User user = snapshot.getValue(User.class);
                     assert user != null;
-
                     dialog_username.setText(user.getUsername());
                     dialog_name.setText(user.getName());
                     dialog_phone.setText(user.getPhone());
@@ -159,13 +183,28 @@ public class MessageActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
                 }
             });
-
             dialog_back.setOnClickListener(v1 -> dialog.dismiss());
-
             dialog.show();
+        });
+
+        //check typing
+        txt_send.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().length() == 0) {
+                    typing("not");
+                } else {
+                    typing(userID);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
         });
 
         //send massage
@@ -173,12 +212,18 @@ public class MessageActivity extends AppCompatActivity {
             String msg = txt_send.getText().toString();
             if (!msg.equals("")) {
                 sendMessage(firebaseUser.getUid(), userID, msg);
+                getToken(userID, chatID, msg);
             } else {
                 Toast.makeText(MessageActivity.this, "Empty message!!", Toast.LENGTH_SHORT).show();
             }
             txt_send.setText("");
         });
 
+        //send file
+        btn_send_file.setOnClickListener(v -> {
+
+        });
+        checkTyping(userID);
         seenMessage(userID);
     }
 
@@ -267,7 +312,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 assert user != null;
-                sendNotification(receiver, user.getUsername(), msg);
+                //sendNotification(receiver, user.getUsername(), msg);
             }
 
             @Override
@@ -307,11 +352,9 @@ public class MessageActivity extends AppCompatActivity {
 
     private void status(String status) {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("status", status);
-
-        reference.updateChildren(hashMap);
+        HashMap<String, Object> mapStatus = new HashMap<>();
+        mapStatus.put("status", status);
+        reference.updateChildren(mapStatus);
     }
 
     @Override
@@ -326,14 +369,112 @@ public class MessageActivity extends AppCompatActivity {
         if (seenListener!=null) {
             reference.removeEventListener(seenListener);
         }
-
         status("offline");
     }
 
+    private void typing(String typing) {
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        HashMap<String, Object> mapTyping = new HashMap<>();
+        mapTyping.put("typing", typing);
+        reference.updateChildren(mapTyping);
+    }
 
-    private void sendNotification(String receiver, String username, String msg) {
+    private void checkTyping(String userID) {
+        DatabaseReference dRef = FirebaseDatabase.getInstance().getReference("Users").child(userID).child("typing");
+        dRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String typing = Objects.requireNonNull(snapshot.getValue()).toString();
+                    if (typing.equals(firebaseUser.getUid())) {
+                        typingAnimation= findViewById(R.id.typing);
+                        typingAnimation.setVisibility(View.VISIBLE);
+                        typingAnimation.playAnimation();
+                    } else {
+                        if (typingAnimation != null) {
+                            typingAnimation.pauseAnimation();
+                            typingAnimation.setVisibility(View.GONE);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void getToken(String userID, String chatID, String msg) {
+        DatabaseReference dRef = FirebaseDatabase.getInstance().getReference("Users").child(userID);
+        dRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //lost token
+                Log.d("GET_TOKEN2", snapshot.toString());
+                String userURL = Objects.requireNonNull(snapshot.child("imageURL").getValue()).toString();
+                String name = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+
+                if (snapshot.child("token").getValue().toString() != null) {
+                    String token = Objects.requireNonNull(snapshot.child("token").getValue()).toString();
+                    JSONObject to = new JSONObject();
+                    JSONObject data = new JSONObject();
+                    try {
+                        data.put("title", name);
+                        data.put("message", msg);
+                        data.put("userID", userID);
+                        data.put("userURL", userURL);
+                        data.put("chatID", chatID);
+                        to.put("to", token);
+                        to.put("data", data);
+
+                        sendNotification(to);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void sendNotification(JSONObject to) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constaints.NOTIFICATION_URL, to, response -> {
+            Log.d("NOTIFICATION", "send notification response: " + response);
+
+        }, error -> {
+            Log.d("NOTIFICATION", "send notification error: " +error);
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("Authorization", "key=" + Constaints.AUTHORIZATION);
+                map.put("Content-Type", "application/json");
+                return map;
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json";
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        request.setRetryPolicy(new DefaultRetryPolicy(30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue.add(request);
+    }
+
+    private void sendNotification1(String userID, String chatID, String msg, String userURL) {
+
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
-        Query query = tokens.orderByKey().equalTo(receiver);
+        Query query = tokens.orderByKey().equalTo(userID);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

@@ -69,19 +69,20 @@ public class UsersFragment extends Fragment {
 
     private void searchUser(String s) {
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-        Query query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("username").startAt(s).endAt(s+"\uf8ff");
 
-        query.addValueEventListener(new ValueEventListener() {
+        Query search = FirebaseDatabase.getInstance().getReference("Users").orderByChild("username");
+        search.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 users.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
-
-                    assert user != null;
                     assert fUser != null;
-                    if (!user.getId().equals((fUser.getUid()))) {
-                        users.add(user);
+                    assert user != null;
+                    if (user.getUsername().contains(s)) {
+                        if (!user.getId().equals((fUser.getUid()))) {
+                            users.add(user);
+                        }
                     }
                 }
                 usersAdapter = new UsersAdapter(getContext(), users, false);

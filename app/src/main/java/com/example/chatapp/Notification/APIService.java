@@ -1,4 +1,4 @@
-package com.example.chatapp.Fragment;
+package com.example.chatapp.Notification;
 
 import com.example.chatapp.Notification.Sender;
 
