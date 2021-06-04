@@ -808,15 +808,53 @@ public class MessageActivity extends AppCompatActivity {
             if (data != null) {
                 selectedImages = data.getStringArrayListExtra(Pix.IMAGE_RESULTS);
 
-                Intent intent = new Intent(MessageActivity.this, SendMediaService.class);
-                intent.putExtra("userID", userID);
-                intent.putExtra("chatID", chatID);
-                intent.putStringArrayListExtra("media", selectedImages);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    MessageActivity.this.stopService(intent);
-                    ContextCompat.startForegroundService(this, intent);
-                } else {
-                    startService(intent);
+//                Intent intent = new Intent(MessageActivity.this, SendMediaService.class);
+//                intent.putExtra("userID", userID);
+//                intent.putExtra("chatID", chatID);
+//                intent.putStringArrayListExtra("media", selectedImages);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    MessageActivity.this.stopService(intent);
+//                    ContextCompat.startForegroundService(this, intent);
+//                } else {
+//                    startService(intent);
+//                }
+                final ProgressDialog dialog = new ProgressDialog(MessageActivity.this);
+                    dialog.setMessage("Uploading...");
+                    dialog.show();
+                for (String cameraImageURL : selectedImages) {
+                    StorageReference camReference = FirebaseStorage.getInstance().getReference("images/message");
+                    if (cameraImageURL != null) {
+                        Uri uri = Uri.fromFile(new File(cameraImageURL));
+                        String s = String.valueOf(System.currentTimeMillis());
+                        final StorageReference fileReference = camReference.child(s + "." + getFileExtension(uri));
+
+                        uploadImageTask = fileReference.putFile(uri);
+                        uploadImageTask.continueWithTask(task -> {
+                            if (!task.isSuccessful()) {
+                                throw Objects.requireNonNull(task.getException());
+                            }
+                            return fileReference.getDownloadUrl();
+                        }).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Uri downloadUri = task.getResult();
+                                assert downloadUri != null;
+                                String mUri = downloadUri.toString();
+
+                                sendMessage(firebaseUser.getUid(), userID, mUri, "image");
+
+                                dialog.dismiss();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Fails", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        }).addOnFailureListener(e -> {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        });
+                    } else {
+                        Toast.makeText(getApplicationContext(), "No image selected!!!", Toast.LENGTH_SHORT).show();
+                    }
+                    input_layout.setVisibility(View.INVISIBLE);
                 }
             }
 
