@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,11 +80,15 @@ public class UsersFragment extends Fragment {
                     User user = dataSnapshot.getValue(User.class);
                     assert fUser != null;
                     assert user != null;
-                    if (user.getUsername().contains(s)) {
-                        if (!user.getId().equals((fUser.getUid()))) {
-                            users.add(user);
+                    Log.d("USERS_FRAGMENT", user.toString());
+                    if (user.getId() != null) {
+                        if (user.getUsername().contains(s)) {
+                            if (!user.getId().equals((fUser.getUid()))) {
+                                users.add(user);
+                            }
                         }
                     }
+
                 }
                 usersAdapter = new UsersAdapter(getContext(), users, false);
                 recyclerView.setAdapter(usersAdapter);
@@ -109,12 +114,14 @@ public class UsersFragment extends Fragment {
                         User user = dataSnapshot.getValue(User.class);
 
                         assert user != null;
-                        assert firebaseUser != null;
-                        if (!user.getId().equals(firebaseUser.getUid())) {
-                            users.add(user);
+                        if (user.getId() != null) {
+                            assert firebaseUser != null;
+                            if (!user.getId().equals(firebaseUser.getUid())) {
+                                users.add(user);
+                            }
                         }
                     }
-                    usersAdapter = new UsersAdapter(getContext(), users, false);
+                    usersAdapter = new UsersAdapter(getContext(), users, false, getFragmentManager());
                     usersAdapter.notifyDataSetChanged();
                     recyclerView.setAdapter(usersAdapter);
                 }

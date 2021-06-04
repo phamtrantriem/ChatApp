@@ -121,9 +121,18 @@
                 android:id="@+id/btn_logout"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:background="@drawable/ic_baseline_logout_24"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/ic_baseline_logout_24" />
+
+            <Button
+                android:id="@+id/btn_upload_story"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="Upload story" />
         </RelativeLayout>
+
     </androidx.cardview.widget.CardView>
+
 
 </FrameLayout>

@@ -15,23 +15,71 @@
         android:layout_height="wrap_content"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/show_message"
+    <LinearLayout
+        android:id="@+id/last_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:background="@drawable/background_right"
-        android:maxWidth="320dp"
-        android:padding="12dp"
-        android:text="@string/hello_blank_fragment"
-        android:textColor="@color/white"
-        android:textSize="18sp" />
+        android:background="@drawable/background_message_right">
+
+        <TextView
+            android:id="@+id/show_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_message_right"
+            android:maxWidth="320dp"
+            android:padding="12dp"
+            android:text="@string/hello_blank_fragment"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/show_message_image"
+            android:layout_width="296dp"
+            android:layout_height="177dp"
+            android:background="@drawable/background_message_right"
+            android:maxWidth="300dp"
+            android:maxHeight="200dp"
+            android:padding="12dp"
+            android:src="@drawable/gallery"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/show_message_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_play_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/background_message_right"
+                android:src="@drawable/ic_baseline_play_white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_message_right"
+                android:maxWidth="320dp"
+                android:padding="12dp"
+                android:text="@string/recorder_sound"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:visibility="visible" />
+        </LinearLayout>
+
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/txt_seen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/show_message"
+        android:layout_below="@id/last_message"
         android:layout_marginEnd="5dp"
         android:layout_toStartOf="@id/txt_time_seen"
         android:text="@string/seen"
@@ -41,7 +89,7 @@
         android:id="@+id/txt_time_seen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/show_message"
+        android:layout_below="@id/last_message"
         android:layout_alignParentEnd="true"
         android:text="@string/at_21_06_36_2021_05_27"
         android:visibility="gone" />

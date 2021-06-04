@@ -14,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.example.chatapp.MessageActivity;
@@ -28,6 +29,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -38,20 +40,21 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        if (remoteMessage.getData().size() > 0) {
+        super.onMessageReceived(remoteMessage);
+        if (remoteMessage.getNotification() != null) {
             Map<String, String> map = remoteMessage.getData();
             String title = map.get("title");
             String message = map.get("message");
             String userID = map.get("userID");
             String userURL = map.get("userURL");
             String chatID = map.get("chatID");
-            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.O) {
-                createOreoNotification(title, message, userID, userURL, chatID);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                createOreoNotification(getApplicationContext(), title, message, userID, userURL, chatID);
             } else {
                 createNotification(title, message, userID, userURL, chatID);
             }
         }
-        super.onMessageReceived(remoteMessage);
+
     }
 
     @Override
@@ -66,16 +69,6 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.hasChild(token)) {
-//                    Map<String, Object> map = new HashMap<>();
-//                    map.put("token", token);
-//                    reference.updateChildren(map);
-//                } else {
-//                    Map<String, Object> map = new HashMap<>();
-//                    map.put("token", token);
-//                    reference.setValue(map);
-//                }
-
                 Map<String, Object> map = new HashMap<>();
                 map.put("token", token);
                 reference.updateChildren(map);
@@ -109,27 +102,19 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         builder.setContentIntent(pendingIntent);
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(new Random().nextInt(85-65), builder.build());
+        manager.notify(1, builder.build());
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void createOreoNotification (String title, String message, String userID, String userURL, String chatID) {
-        NotificationChannel channel = new NotificationChannel(Constaints.CHANNEL_ID, "Message", NotificationManager.IMPORTANCE_HIGH);
-        channel.setShowBadge(true);
-        channel.enableLights(true);
-        channel.enableVibration(true);
-        channel.setDescription("Message Description");
-        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+    private void createOreoNotification (Context context, String title, String message, String userID, String userURL, String chatID) {
 
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.createNotificationChannel(channel);
 
         Intent intent = new Intent(this, MessageActivity.class);
         intent.putExtra("userID", chatID);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        Notification notification = new Notification.Builder(this, Constaints.CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(this, Constaints.CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setColor(ResourcesCompat.getColor(getResources(),R.color.colorPrimary, null))
@@ -137,6 +122,12 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .build();
-        manager.notify(new Random().nextInt(85-65), notification);
+
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(context);
+        managerCompat.notify(getNotificationID(), notification);
+    }
+
+    private int getNotificationID() {
+        return (int) new Date().getTime();
     }
 }

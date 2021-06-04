@@ -1,5 +1,7 @@
 package com.example.chatapp.Object;
 
+import androidx.annotation.NonNull;
+
 public class User {
     private String id;
     private String username;
@@ -90,6 +92,15 @@ public class User {
         this.typing = typing;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return "User{" +
@@ -101,6 +112,7 @@ public class User {
                 ", phone='" + phone + '\'' +
                 ", status='" + status + '\'' +
                 ", typing='" + typing + '\'' +
+                ", token='" + token + '\'' +
                 '}';
     }
 }

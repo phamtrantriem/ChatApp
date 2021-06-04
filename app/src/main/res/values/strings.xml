@@ -21,12 +21,20 @@
     <string name="at_21_06_36_2021_05_27">  </string>
     <string name="forgot_your_password">Forgot your password?</string>
     <string name="send_email_verifier">Reset</string>
-    <string name="string_reset_your_password">By clicking RESET, you will recieve an email to reset your password.</string>
+    <string name="string_reset_your_password">By clicking RESET, you will receive an email to reset your password.</string>
     <string name="description">Description</string>
-    <string name="last_message"> ... </string>
+    <string name="last_message"> … </string>
     <string name="time_last_message"> 00:00 </string>
     <string name="message">Message</string>
     <string name="users">Users</string>
     <string name="story">Story</string>
     <string name="todo">TODO</string>
+    <string name="channel_name">NotificationChannel</string>
+    <string name="channel_description">This is notification channel</string>
+    <string name="start">Start</string>
+    <string name="status">Status</string>
+    <string name="recorder_sound">Recorder sound</string>
+    <string name="call">Call</string>
+    <string name="information">Information</string>
+    <string name="back">Back</string>
 </resources>

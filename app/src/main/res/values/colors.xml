@@ -10,6 +10,8 @@
     <color name="colorPrimaryDark">#425C59</color>
     <color name="colorPrimary">#1d9c67</color>
     <color name="whiteTrans">#aaa</color>
+    <color name="white_10">#DDDDDD</color>
+    <color name="red">#F44336</color>
 
 <!--    <color name="colorPrimary">#286C6C</color>-->
     <color name="colorAccent">#FFCEA3</color>

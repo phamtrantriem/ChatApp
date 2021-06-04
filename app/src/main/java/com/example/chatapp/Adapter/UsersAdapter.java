@@ -8,13 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.chatapp.Element.BottomSheetUser;
 import com.example.chatapp.MessageActivity;
 import com.example.chatapp.Object.Chat;
 import com.example.chatapp.Object.User;
@@ -33,15 +34,23 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
 
     final private Context mContext;
     final private List<User> userList;
-    private boolean isChat;
+    final private boolean isChat;
+    private FragmentManager fm;
 
-    String lastMessage, userWithLastMessageID, timeLastMessage;
+    String lastMessage, userWithLastMessageID, timeLastMessage, type;
     private boolean isSeen;
 
     public UsersAdapter(Context mContext, List<User> userList, boolean isChat) {
         this.mContext = mContext;
         this.userList = userList;
         this.isChat = isChat;
+    }
+
+    public UsersAdapter(Context mContext, List<User> userList, boolean isChat, FragmentManager fm) {
+        this.mContext = mContext;
+        this.userList = userList;
+        this.isChat = isChat;
+        this.fm = fm;
     }
 
     @NonNull
@@ -62,7 +71,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         }
 
         if (isChat) {
-            lastMessage(user.getId(), holder.last_message, holder.time_last_message, holder.username);
+            lastMessage(user.getId(), holder.last_message, holder.time_last_message, holder.username, holder.ic_not_seen);
 
             if (user.getStatus().equals("online")) {
                 holder.img_onl.setVisibility(View.VISIBLE);
@@ -83,6 +92,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
             intent.putExtra("chatID", user.getId());
             mContext.startActivity(intent);
         });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            BottomSheetUser bottomSheetUser = new BottomSheetUser(user.getId());
+            bottomSheetUser.show(fm, "bottom");
+            return true;
+        });
     }
 
     @Override
@@ -94,9 +109,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView username, last_message, time_last_message;
-        public ImageView profile_image;
-        public ImageView img_onl;
-        public ImageView img_off;
+        public ImageView profile_image, img_onl, img_off, ic_not_seen;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -106,14 +120,16 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
             img_off = itemView.findViewById(R.id.img_off);
             last_message = itemView.findViewById(R.id.last_message);
             time_last_message = itemView.findViewById(R.id.time_last_message);
+            ic_not_seen = itemView.findViewById(R.id.ic_not_seen);
         }
     }
 
     //check last message
-    private void lastMessage(String userID, TextView last_message, TextView time_last_message, TextView username) {
+    private void lastMessage(String userID, TextView last_message, TextView time_last_message, TextView username, ImageView ic_not_seen) {
         lastMessage = "default";
         userWithLastMessageID = "";
         timeLastMessage = "00:00";
+        type = "";
 
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -130,6 +146,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                             userWithLastMessageID = chat.getSender();
                             timeLastMessage = chat.getTimeSend().substring(0,5);
                             isSeen = chat.isSeen();
+                            type = chat.getType();
                         }
                     }
                     if ("default".equals(lastMessage)) {
@@ -137,15 +154,26 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                         time_last_message.setText("");
                     } else {
                         if (userWithLastMessageID.equals(fUser.getUid())) {
-                            String last_msg = "You: " + lastMessage;
-                            last_message.setText(last_msg);
+                            if (type.equals("image")) {
+                                lastMessage = "You: Sent an image";
+                            } else if (type.equals("audio")) {
+                                lastMessage = "You: Sent a voice record";
+                            } else {
+                                lastMessage = "You: " + lastMessage;
+                            }
                         } else {
+                            if (type.equals("image")) {
+                                lastMessage = "Sent an image";
+                            } else if (type.equals("audio")) {
+                                lastMessage = "Sent a voice record";
+                            }
                             if (!isSeen) {
                                 username.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
                                 last_message.setTypeface(Typeface.DEFAULT_BOLD);
+                                ic_not_seen.setVisibility(View.VISIBLE);
                             }
-                            last_message.setText(lastMessage);
                         }
+                        last_message.setText(lastMessage);
                         time_last_message.setText(timeLastMessage);
                     }
                     lastMessage = "default";

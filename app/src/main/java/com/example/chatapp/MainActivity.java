@@ -3,6 +3,7 @@ package com.example.chatapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -19,7 +20,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 import com.bumptech.glide.Glide;
 import com.example.chatapp.Fragment.ChatsFragment;
 import com.example.chatapp.Fragment.ProfileFragment;
@@ -31,6 +36,7 @@ import com.example.chatapp.Service.FirebaseNotificationService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -56,12 +62,11 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference reference;
 
     int unRead;
+    int selectedTab;
 
     ProgressDialog progressDialog;
     CountDownTimer countDownTimer;
     int i = 0;
-
-
 
     @Override
     protected void onStart() {
@@ -142,26 +147,47 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        //show fragment
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            int idFmt = item.getItemId();
-            if (idFmt == R.id.nav_message) {
-                setFragment(new ChatsFragment());
-                return true;
-            } else if (idFmt == R.id.nav_search) {
-                setFragment(new UsersFragment());
-                return true;
-            } else if (idFmt == R.id.nav_story) {
-                setFragment(new StoryFragment());
-                return true;
-            } else if (idFmt == R.id.nav_profile) {
-                setFragment(new ProfileFragment());
-                return true;
-            }
-            return false;
+        //bottom navigation
+        AHBottomNavigation bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
+        FloatingActionButton floatingActionButton = new FloatingActionButton(MainActivity.this);
+        bottomNavigation.manageFloatingActionButtonBehavior(floatingActionButton);
+
+        AHBottomNavigationItem item1 = new AHBottomNavigationItem(R.string.message, R.drawable.ic_baseline_chat_24, R.color.colorPrimaryDark);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem(R.string.users, R.drawable.ic_baseline_person_search_24, R.color.colorPrimary);
+        AHBottomNavigationItem item3 = new AHBottomNavigationItem(R.string.story, R.drawable.ic_baseline_video_camera_back_24, R.color.purple_200);
+        AHBottomNavigationItem item4 = new AHBottomNavigationItem(R.string.profile, R.drawable.ic_baseline_person_24, R.color.colorBottomNavigationPrimary);
+
+        bottomNavigation.addItem(item1);
+        bottomNavigation.addItem(item2);
+        bottomNavigation.addItem(item3);
+        bottomNavigation.addItem(item4);
+
+        bottomNavigation.setColored(true);
+        bottomNavigation.setBehaviorTranslationEnabled(false);
+        bottomNavigation.setAccentColor(Color.parseColor("#F63D2B"));
+        bottomNavigation.setCurrentItem(0);
+        setFragment(new ChatsFragment());
+        bottomNavigation.setForceTint(true);
+        bottomNavigation.setColored(true);
+        bottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
+        if (unRead>0) {
+            AHNotification notification = new AHNotification.Builder()
+                    .setText(String.valueOf(unRead))
+                    .setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorBottomNavigationNotification))
+                    .setTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
+                    .build();
+            bottomNavigation.setNotification(notification, 0);
+        }
+        bottomNavigation.setOnTabSelectedListener((position, wasSelected) -> {
+            selectedTab = position;
+            if (selectedTab == 0) {setFragment(new ChatsFragment());}
+            if (selectedTab == 1) {setFragment(new UsersFragment());}
+            if (selectedTab == 2) {setFragment(new StoryFragment());}
+            if (selectedTab == 3) {setFragment(new ProfileFragment());}
+            return true;
         });
-        bottomNavigationView.setSelectedItemId(R.id.nav_message);
+
+
 
         progressDialog.show();
         countDownTimer = new CountDownTimer(1500,1000) {
@@ -269,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void status(String status) {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-
+        Log.d("MAIN_ACTIVITY", firebaseUser.getUid());
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("status", status);
 

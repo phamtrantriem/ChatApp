@@ -75,16 +75,19 @@ public class ChatsFragment extends Fragment {
                     ChatsList chatsList = dataSnapshot.getValue(ChatsList.class);
                     sortedUserList.add(chatsList);
                 }
-                Collections.sort(sortedUserList, (o1, o2) -> {
-                    String[] str1 = o1.getLastMessageDate().split(" ");
-                    String[] str2 = o2.getLastMessageDate().split(" ");
-                    if (o1.getLastMessageDate() == null || o2.getLastMessageDate() == null)
-                        return 0;
-                    if (str2[1].compareTo(str1[1]) == 0){
-                        return str2[0].compareTo(str1[0]);
-                    }
-                    return str2[1].compareTo(str1[1]);
-                });
+
+                if (sortedUserList.size() >0) {
+                    Collections.sort(sortedUserList, (o1, o2) -> {
+                        String[] str1 = o1.getLastMessageDate().split("\\s+");
+                        String[] str2 = o2.getLastMessageDate().split("\\s+");
+                        if (o1.getLastMessageDate() == null || o2.getLastMessageDate() == null)
+                            return 0;
+                        if (str2[1].compareTo(str1[1]) == 0){
+                            return str2[0].compareTo(str1[0]);
+                        }
+                        return str2[1].compareTo(str1[1]);
+                    });
+                }
                 readChats();
             }
 
@@ -126,15 +129,17 @@ public class ChatsFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
 
-                    assert user != null;
-                    assert fUser != null;
-                    for (ChatsList chatsList : sortedUserList) {
-                        if (user.getUsername().contains(s)) {
-                            if (!user.getId().equals((fUser.getUid())) && user.getId().equals(chatsList.getId()) ) {
-                                userList.add(user);
+                    if (user != null && user.getId() != null) {
+                        assert fUser != null;
+                        for (ChatsList chatsList : sortedUserList) {
+                            if (user.getUsername().contains(s)) {
+                                if (!user.getId().equals((fUser.getUid())) && user.getId().equals(chatsList.getId()) ) {
+                                    userList.add(user);
+                                }
                             }
                         }
                     }
+
 
                 }
                 usersAdapter = new UsersAdapter(getContext(), userList, true);
@@ -161,14 +166,15 @@ public class ChatsFragment extends Fragment {
                         User user = dataSnapshot.getValue(User.class);
 
                         assert user != null;
-                        Log.d("CHATS_FRAGMENT", chatsList.toString());
-                        if (user.getId().equals(chatsList.getId())) {
-                            userList.add(user);
+                        if (user.getId()!=null) {
+                            if (user.getId().equals(chatsList.getId())) {
+                                userList.add(user);
+                            }
                         }
                     }
                 }
 
-                usersAdapter = new UsersAdapter(getContext(), userList, true);
+                usersAdapter = new UsersAdapter(getContext(), userList, true, getFragmentManager());
                 recyclerView.setAdapter(usersAdapter);
             }
 

@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.example.chatapp.MainActivity;
 import com.example.chatapp.Object.User;
 import com.example.chatapp.R;
+import com.example.chatapp.Service.Constaints;
 import com.example.chatapp.StartActivity;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,14 +47,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
 
-    private static final int RESULT_OK = -1;
+
     CircleImageView profile_image;
     TextView username, txtEmail, txtName, txtPhone;
     ImageButton btn_logout;
 
     DatabaseReference dReference;
     StorageReference sReference;
-    private  static final int IMAGE_REQUEST = 1;
+
     private Uri imageUri;
 
     StorageTask<UploadTask.TaskSnapshot> uploadImageTask;
@@ -94,27 +95,27 @@ public class ProfileFragment extends Fragment {
                         Glide.with(requireContext()).load(user.getImageURL()).into(profile_image);
                     };
                 }
-
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
 
+        //logout
         btn_logout = view.findViewById(R.id.btn_logout);
         btn_logout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getContext(), StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         });
+
         return view;
     }
     private void openImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, IMAGE_REQUEST);
+        startActivityForResult(intent, Constaints.IMAGE_REQUEST);
+
     }
 
     private String getFileExtension(Uri imageUri) {
@@ -122,6 +123,21 @@ public class ProfileFragment extends Fragment {
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(imageUri));
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Constaints.RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            if (uploadImageTask != null && uploadImageTask.isInProgress()) {
+                Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
+            } else {
+                uploadImage();
+            }
+        }
+    }
+
 
     private void uploadImage() {
         final ProgressDialog dialog = new ProgressDialog(getContext());
@@ -133,12 +149,12 @@ public class ProfileFragment extends Fragment {
             final StorageReference fileReference = sReference.child(s + "." + getFileExtension(imageUri));
 
             uploadImageTask = fileReference.putFile(imageUri);
-            uploadImageTask.continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task -> {
+            uploadImageTask.continueWithTask(task -> {
                 if (!task.isSuccessful()) {
                     throw Objects.requireNonNull(task.getException());
                 }
                 return fileReference.getDownloadUrl();
-            }).addOnCompleteListener((OnCompleteListener<Uri>) task -> {
+            }).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     assert downloadUri != null;
@@ -160,20 +176,6 @@ public class ProfileFragment extends Fragment {
             });
         } else {
             Toast.makeText(getContext(), "No image selected!!!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            if (uploadImageTask != null && uploadImageTask.isInProgress()) {
-                Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
-            } else {
-                uploadImage();
-            }
         }
     }
 }

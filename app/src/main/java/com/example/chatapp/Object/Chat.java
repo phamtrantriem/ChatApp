@@ -9,14 +9,17 @@ public class Chat {
     private boolean seen;
     private String timeSeen;
     private String timeSend;
+    private String type;
 
-    public Chat(String sender, String receiver, String message, boolean isSeen, String timeSeen, String timeSend) {
+
+    public Chat(String sender, String receiver, String message, boolean isSeen, String timeSeen, String timeSend, String type) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.seen = isSeen;
         this.timeSeen = timeSeen;
         this.timeSend = timeSend;
+        this.type = type;
     }
 
     public Chat() {
@@ -69,6 +72,14 @@ public class Chat {
 
     public void setTimeSend(String timeSend) {
         this.timeSend = timeSend;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
