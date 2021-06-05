@@ -76,7 +76,7 @@ public class ChatsFragment extends Fragment {
                     sortedUserList.add(chatsList);
                 }
 
-                if (sortedUserList.size() >0) {
+                if (sortedUserList.size() > 1) {
                     Collections.sort(sortedUserList, (o1, o2) -> {
                         String[] str1 = o1.getLastMessageDate().split("\\s+");
                         String[] str2 = o2.getLastMessageDate().split("\\s+");

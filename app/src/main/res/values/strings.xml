@@ -37,4 +37,5 @@
     <string name="call">Call</string>
     <string name="information">Information</string>
     <string name="back">Back</string>
+    <string name="delete_conversation">Delete relationship</string>
 </resources>
