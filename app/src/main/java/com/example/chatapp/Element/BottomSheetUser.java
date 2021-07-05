@@ -113,8 +113,8 @@ public class BottomSheetUser extends BottomSheetDialogFragment {
             builder.setCancelable(true);
             builder.setIcon(R.drawable.ic_baseline_delete_24);
             builder.setPositiveButton("Yes", (dialog, which) -> {
-                DatabaseReference deleteChatReference = FirebaseDatabase.getInstance().getReference("ChatsList");
-                Query query = deleteChatReference.child(currentUser).orderByChild("id").equalTo(userID);
+                DatabaseReference deleteChatListReference = FirebaseDatabase.getInstance().getReference("ChatsList");
+                Query query = deleteChatListReference.child(currentUser).orderByChild("id").equalTo(userID);
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -128,19 +128,19 @@ public class BottomSheetUser extends BottomSheetDialogFragment {
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) { }
                 });
-                deleteChatReference = FirebaseDatabase.getInstance().getReference("Chats");
-                query.addValueEventListener(new ValueEventListener() {
+                DatabaseReference deleteChatReference = FirebaseDatabase.getInstance().getReference();
+                Query query1 = deleteChatReference.child("Chats");
+                query1.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Chat chat = dataSnapshot.getValue(Chat.class);
-                            assert chat != null;
-                            if (chat.getSender().equals(currentUser) && chat.getReceiver().equals(userID) || chat.getReceiver().equals(currentUser) && chat.getSender().equals(userID)) {
-                                dataSnapshot.getRef().removeValue();
+                            if (chat != null) {
+                                if (chat.getSender().equals(currentUser) && chat.getReceiver().equals(userID) || chat.getReceiver().equals(currentUser) && chat.getSender().equals(userID)) {
+                                    dataSnapshot.getRef().removeValue();
+                               }
                             }
                         }
-
-
                     }
 
                     @Override

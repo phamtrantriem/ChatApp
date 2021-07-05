@@ -80,7 +80,6 @@ public class UsersFragment extends Fragment {
                     User user = dataSnapshot.getValue(User.class);
                     assert fUser != null;
                     assert user != null;
-                    Log.d("USERS_FRAGMENT", user.toString());
                     if (user.getId() != null) {
                         if (user.getUsername().contains(s)) {
                             if (!user.getId().equals((fUser.getUid()))) {

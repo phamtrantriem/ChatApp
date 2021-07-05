@@ -62,7 +62,7 @@ public class ChatsFragment extends Fragment {
         fUser = FirebaseAuth.getInstance().getCurrentUser();
 
         sortedUserList = new ArrayList<>();
-
+        sortedUserList.clear();
         //get list user on contact
         reference = FirebaseDatabase.getInstance().getReference("ChatsList").child(fUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
@@ -70,22 +70,29 @@ public class ChatsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (userList != null) {
                     userList.clear();
+                    sortedUserList.clear();
                 }
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     ChatsList chatsList = dataSnapshot.getValue(ChatsList.class);
                     sortedUserList.add(chatsList);
                 }
-
+                Log.d("LIST", sortedUserList.toString());
                 if (sortedUserList.size() > 1) {
                     Collections.sort(sortedUserList, (o1, o2) -> {
-                        String[] str1 = o1.getLastMessageDate().split("\\s+");
-                        String[] str2 = o2.getLastMessageDate().split("\\s+");
-                        if (o1.getLastMessageDate() == null || o2.getLastMessageDate() == null)
+                        Log.d("LIST1", o1.toString());
+                        Log.d("LIST2", o2.toString());
+                        if (o1.getLastMessageDate() != null && o2.getLastMessageDate() != null) {
+                            String[] str1 = o1.getLastMessageDate().split("\\s");
+                            String[] str2 = o2.getLastMessageDate().split("\\s");
+                            if (o1.getLastMessageDate() == null || o2.getLastMessageDate() == null)
+                                return 0;
+                            if (str2[1].compareTo(str1[1]) == 0){
+                                return str2[0].compareTo(str1[0]);
+                            }
+                            return str2[1].compareTo(str1[1]);
+                        } else {
                             return 0;
-                        if (str2[1].compareTo(str1[1]) == 0){
-                            return str2[0].compareTo(str1[0]);
                         }
-                        return str2[1].compareTo(str1[1]);
                     });
                 }
                 readChats();

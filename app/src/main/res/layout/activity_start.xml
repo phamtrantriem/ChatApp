@@ -18,12 +18,13 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
             android:text="@string/chat_app"
-            android:textSize="28sp"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
         <Button
             android:id="@+id/login"
             android:layout_width="309dp"
+            android:textColor="@color/white"
             android:layout_height="60dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="100dp"
@@ -34,6 +35,7 @@
             android:id="@+id/register"
             android:layout_width="309dp"
             android:layout_height="60dp"
+            android:textColor="@color/white"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/colorPrimaryDark"

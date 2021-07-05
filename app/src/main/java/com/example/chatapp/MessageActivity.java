@@ -625,14 +625,13 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("type", type);
 
         reference.child("Chats").push().setValue(hashMap);
-
         //add user to chat fragment
         DatabaseReference chatReference1 = FirebaseDatabase.getInstance().getReference("ChatsList").child(firebaseUser.getUid()).child(userID);
         DatabaseReference chatReference2 = FirebaseDatabase.getInstance().getReference("ChatsList").child(userID).child(firebaseUser.getUid());
         chatReference1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()) {
+                if (!snapshot.child("id").exists()) {
                     chatReference1.child("id").setValue(userID);
                     chatReference1.child("lastMessageDate").setValue(formatted);
                     chatReference2.child("id").setValue(firebaseUser.getUid());

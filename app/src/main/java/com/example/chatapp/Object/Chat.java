@@ -88,9 +88,10 @@ public class Chat {
                 "sender='" + sender + '\'' +
                 ", receiver='" + receiver + '\'' +
                 ", message='" + message + '\'' +
-                ", isSeen=" + seen +
+                ", seen=" + seen +
                 ", timeSeen='" + timeSeen + '\'' +
                 ", timeSend='" + timeSend + '\'' +
+                ", type='" + type + '\'' +
                 '}';
     }
 }

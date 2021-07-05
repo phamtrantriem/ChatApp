@@ -69,62 +69,65 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
         Chat chat = chatList.get(position);
         Log.d("MESSAGE_ADAPTER", chat.toString());
-        if (chat.getType().equals("text")) {
-            holder.show_message.setText(chat.getMessage());
-            holder.show_message.setVisibility(View.VISIBLE);
-            holder.show_message_image.setVisibility(View.GONE);
-            holder.show_message_audio.setVisibility(View.GONE);
-        } else if (chat.getType().equals("image")) {
-            Glide.with(mContext).load(chat.getMessage()).into(holder.show_message_image);
-            holder.show_message_image.setVisibility(View.VISIBLE);
-            holder.show_message.setVisibility(View.GONE);
-            holder.show_message_audio.setVisibility(View.GONE);
-            holder.show_message_image.setOnClickListener(v -> {
-                final Dialog dialog = new Dialog(v.getContext(), android.R.style.Theme_Black_NoTitleBar);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(100, 0, 0, 0)));
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setCanceledOnTouchOutside(true);
-                dialog.setContentView(R.layout.dialog_image);
+        if (chat.getType() != null) {
+            if (chat.getType().equals("text")) {
+                holder.show_message.setText(chat.getMessage());
+                holder.show_message.setVisibility(View.VISIBLE);
+                holder.show_message_image.setVisibility(View.GONE);
+                holder.show_message_audio.setVisibility(View.GONE);
+            } else if (chat.getType().equals("image")) {
+                Glide.with(mContext).load(chat.getMessage()).into(holder.show_message_image);
+                holder.show_message_image.setVisibility(View.VISIBLE);
+                holder.show_message.setVisibility(View.GONE);
+                holder.show_message_audio.setVisibility(View.GONE);
+                holder.show_message_image.setOnClickListener(v -> {
+                    final Dialog dialog = new Dialog(v.getContext(), android.R.style.Theme_Black_NoTitleBar);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(100, 0, 0, 0)));
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.setCanceledOnTouchOutside(true);
+                    dialog.setContentView(R.layout.dialog_image);
 
-                PhotoView photo_view = dialog.findViewById(R.id.photo_view);
-                ImageButton dialog_back = dialog.findViewById(R.id.btn_dialog_back);
+                    PhotoView photo_view = dialog.findViewById(R.id.photo_view);
+                    ImageButton dialog_back = dialog.findViewById(R.id.btn_dialog_back);
 
-                GlideApp.with(v.getContext()).load(chat.getMessage()).into(photo_view);
+                    GlideApp.with(v.getContext()).load(chat.getMessage()).into(photo_view);
 
-                dialog_back.setOnClickListener(v1 -> dialog.dismiss());
-                dialog.show();
-            });
-        } else if (chat.getType().equals("audio")) {
-            holder.show_message_audio.setVisibility(View.VISIBLE);
-            holder.show_message.setVisibility(View.GONE);
-            holder.show_message_image.setVisibility(View.GONE);
-            holder.btn_play_message.setOnClickListener(v -> {
-                if (chat.getSender().equals(firebaseUser.getUid())) {
-                    holder.btn_play_message.setImageResource(R.drawable.ic_baseline_pause_white);
-                } else {
-                    holder.btn_play_message.setImageResource(R.drawable.ic_baseline_pause_black);
-                }
-                String source = chat.getMessage();
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                try {
-                    mediaPlayer.setDataSource(source);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    holder.btn_play_message.setClickable(false);
-                    mediaPlayer.setOnCompletionListener(mp -> {
-                        if (chat.getSender().equals(firebaseUser.getUid())) {
-                            holder.btn_play_message.setImageResource(R.drawable.ic_baseline_play_white);
-                        } else {
-                            holder.btn_play_message.setImageResource(R.drawable.ic_baseline_play_black);
-                        }
-                        mediaPlayer.stop();
-                        holder.btn_play_message.setClickable(true);
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+                    dialog_back.setOnClickListener(v1 -> dialog.dismiss());
+                    dialog.show();
+                });
+            } else if (chat.getType().equals("audio")) {
+                holder.show_message_audio.setVisibility(View.VISIBLE);
+                holder.show_message.setVisibility(View.GONE);
+                holder.show_message_image.setVisibility(View.GONE);
+                holder.btn_play_message.setOnClickListener(v -> {
+                    if (chat.getSender().equals(firebaseUser.getUid())) {
+                        holder.btn_play_message.setImageResource(R.drawable.ic_baseline_pause_white);
+                    } else {
+                        holder.btn_play_message.setImageResource(R.drawable.ic_baseline_pause_black);
+                    }
+                    String source = chat.getMessage();
+                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    try {
+                        mediaPlayer.setDataSource(source);
+                        mediaPlayer.prepare();
+                        mediaPlayer.start();
+                        holder.btn_play_message.setClickable(false);
+                        mediaPlayer.setOnCompletionListener(mp -> {
+                            if (chat.getSender().equals(firebaseUser.getUid())) {
+                                holder.btn_play_message.setImageResource(R.drawable.ic_baseline_play_white);
+                            } else {
+                                holder.btn_play_message.setImageResource(R.drawable.ic_baseline_play_black);
+                            }
+                            mediaPlayer.stop();
+                            holder.btn_play_message.setClickable(true);
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
         }
+
 
         if (imageURL.equals("default")) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);

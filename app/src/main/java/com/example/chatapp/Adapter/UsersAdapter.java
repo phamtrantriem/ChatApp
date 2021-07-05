@@ -153,7 +153,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                         last_message.setText("");
                         time_last_message.setText("");
                     } else {
-                        if (userWithLastMessageID.equals(fUser.getUid())) {
+                        if (userWithLastMessageID.equals(fUser.getUid()) && type != null) {
                             if (type.equals("image")) {
                                 lastMessage = "You: Sent an image";
                             } else if (type.equals("audio")) {
@@ -161,7 +161,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                             } else {
                                 lastMessage = "You: " + lastMessage;
                             }
-                        } else {
+                        } else if (type != null){
                             if (type.equals("image")) {
                                 lastMessage = "Sent an image";
                             } else if (type.equals("audio")) {

@@ -21,7 +21,7 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ChatApp"
+        android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:replace="android:theme">
         <activity android:name=".SplashActivity">
@@ -34,17 +34,21 @@
         <activity
             android:name=".ResetPasswordActivity"
             android:parentActivityName=".LoginActivity" />
-        <activity android:name=".MessageActivity" />
+        <activity android:name=".MessageActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.ChatApp" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
-            android:parentActivityName=".StartActivity" />
+            android:parentActivityName=".StartActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".RegisterActivity"
-            android:parentActivityName=".StartActivity" />
-        <activity android:name=".StartActivity" />
+            android:parentActivityName=".StartActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".StartActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
             android:name=".Service.FirebaseNotificationService"
