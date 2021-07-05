@@ -8,10 +8,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -55,27 +57,15 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
-import com.devlomi.record_view.OnRecordListener;
-import com.devlomi.record_view.RecordButton;
-import com.devlomi.record_view.RecordView;
 import com.example.chatapp.Adapter.MessageAdapter;
-import com.example.chatapp.Notification.APIService;
-import com.example.chatapp.Notification.Client;
-import com.example.chatapp.Notification.Data;
-import com.example.chatapp.Notification.Sender;
-import com.example.chatapp.Notification.Token;
 import com.example.chatapp.Object.Chat;
 import com.example.chatapp.Object.User;
-import com.example.chatapp.Permission.Permissions;
 import com.example.chatapp.Service.Constaints;
-import com.example.chatapp.Service.SendMediaService;
 import com.fxn.pix.Options;
 import com.fxn.pix.Pix;
 import com.fxn.utility.PermUtil;
-import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -83,7 +73,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -125,13 +114,9 @@ public class MessageActivity extends AppCompatActivity {
     RelativeLayout input_layout;
     ImageView ic_camera, ic_gallery, ic_micro;
     LinearLayout input_text_layout;
-
-    RecordButton recordButton;
-    RecordView recordView;
     MediaRecorder mediaRecorder;
 
     ValueEventListener seenListener;
-    Permissions permissions;
     MessageAdapter messageAdapter;
     List<Chat> chatList;
 
@@ -149,6 +134,21 @@ public class MessageActivity extends AppCompatActivity {
     RecyclerView recyclerView;
 
     private ArrayList<String> selectedImages;
+
+    private ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                int resultCode = result.getResultCode();
+                Intent data = result.getData();
+                if (resultCode == Constaints.RESULT_OK && data != null && data.getData() != null) {
+                    imageUri = data.getData();
+                    if (uploadImageTask != null && uploadImageTask.isInProgress()) {
+                        Toast.makeText(getApplicationContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
+                    } else {
+                        uploadImage();
+                    }
+                }
+            });
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -179,8 +179,6 @@ public class MessageActivity extends AppCompatActivity {
         ic_camera = findViewById(R.id.ic_camera);
         ic_gallery = findViewById(R.id.ic_gallery);
         ic_micro = findViewById(R.id.ic_micro);
-//        recordButton = findViewById(R.id.recordButton);
-//        recordView = findViewById(R.id.recordView);
         input_text_layout = findViewById(R.id.input_text_layout);
 
         intent = getIntent();
@@ -192,7 +190,6 @@ public class MessageActivity extends AppCompatActivity {
             chatID = userID;
         }
 
-        permissions = new Permissions();
 
 
         //get receiver
@@ -268,12 +265,8 @@ public class MessageActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().trim().length() == 0) {
                     typing("not");
-//                    recordButton.setVisibility(View.VISIBLE);
-//                    btn_send.setVisibility(View.GONE);
                 } else {
                     typing(userID);
-//                    recordButton.setVisibility(View.GONE);
-//                    btn_send.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -305,7 +298,13 @@ public class MessageActivity extends AppCompatActivity {
 
         //input camera
         ic_camera.setOnClickListener(v -> {
-            getCameraImage();
+            if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                getCameraImage();
+            } else {
+                String [] micPermissions = {Manifest.permission.CAMERA};
+                requestPermissions(micPermissions, Constaints.CAMERA_REQUEST_CODE);
+            }
+
         });
 
         //input gallery
@@ -318,152 +317,34 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         //input recorder
-        mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
 
-        mediaRecorder.setOutputFile(audioFile);
         ic_micro.setOnClickListener(v -> {
-            sendRecordingMessage();
+            if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                if (checkSelfPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    getRecordingMessage();
+                } else {
+                    String [] micPermissions = {Manifest.permission.MANAGE_EXTERNAL_STORAGE};
+                    requestPermissions(micPermissions, Constaints.STORAGE_REQUEST_CODE);
+                }
+            } else {
+                String [] micPermissions = {Manifest.permission.RECORD_AUDIO};
+                requestPermissions(micPermissions, Constaints.RECORDING_REQUEST_CODE);
+            }
+
             if (input_layout.getVisibility() == View.INVISIBLE) {
                 showInputLayout();
             } else {
                 hideInputLayout();
             }
         });
-        //initRecordView();
 
 
         checkTyping(userID);
         seenMessage(userID);
     }
 
-    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                int resultCode = result.getResultCode();
-                Intent data = result.getData();
-                if (resultCode == Constaints.RESULT_OK && data != null && data.getData() != null) {
-                    imageUri = data.getData();
-                    if (uploadImageTask != null && uploadImageTask.isInProgress()) {
-                        Toast.makeText(getApplicationContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
-                    } else {
-                        uploadImage();
-                    }
-                }
-            });
+    private void getRecordingMessage() {
 
-//    private void initRecordView() {
-//        recordButton.setRecordView(recordView);
-//        recordButton.setListenForRecord(false);
-//
-//        recordButton.setOnRecordClickListener(v -> {
-//            if (permissions.isEnableRecording(MessageActivity.this))
-//                if (permissions.isEnableRecording(MessageActivity.this))
-//                    recordButton.setListenForRecord(true);
-//                else permissions.requestRecordingPermission(MessageActivity.this);
-//            else permissions.requestRecordingPermission(MessageActivity.this);
-//
-//        });
-//
-//        recordView.setOnRecordListener(new OnRecordListener() {
-//            @Override
-//            public void onStart() {
-//                //Start Recording..
-//                Log.d("RecordView", "onStart");
-//
-//                setUpRecording();
-//
-//                try {
-//                    mediaRecorder.prepare();
-//                    mediaRecorder.start();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                input_text_layout.setVisibility(View.GONE);
-//                btn_send.setVisibility(View.GONE);
-//                recordButton.setVisibility(View.VISIBLE);
-//                recordView.setVisibility(View.VISIBLE);
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                //On Swipe To Cancel
-//                Log.d("RecordView", "onCancel");
-//                mediaRecorder.reset();
-//                mediaRecorder.release();
-//                File file = new File(audioPath);
-//                if (file.exists()) {
-//                    file.delete();
-//                }
-//
-//                input_text_layout.setVisibility(View.VISIBLE);
-//                btn_send.setVisibility(View.VISIBLE);
-//                recordButton.setVisibility(View.GONE);
-//                recordView.setVisibility(View.GONE);
-//            }
-//
-//            @Override
-//            public void onFinish(long recordTime, boolean limitReached) {
-//                //Stop Recording..
-//                //limitReached to determine if the Record was finished when time limit reached.
-//                Log.d("RecordView", "onFinish");
-//
-//                try {
-//                    mediaRecorder.stop();
-//                    mediaRecorder.release();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//                input_text_layout.setVisibility(View.VISIBLE);
-//                btn_send.setVisibility(View.VISIBLE);
-//                recordButton.setVisibility(View.GONE);
-//                recordView.setVisibility(View.GONE);
-//
-//                sendRecordingMessage(audioPath);
-//            }
-//
-//            @Override
-//            public void onLessThanSecond() {
-//                //When the record time is less than One Second
-//                Log.d("RecordView", "onLessThanSecond");
-//
-//                mediaRecorder.reset();
-//                mediaRecorder.release();
-//                File file = new File(audioPath);
-//                if (file.exists()) {
-//                    file.delete();
-//                }
-//
-//                input_text_layout.setVisibility(View.VISIBLE);
-//                btn_send.setVisibility(View.VISIBLE);
-//                recordButton.setVisibility(View.GONE);
-//                recordView.setVisibility(View.GONE);
-//            }
-//        });
-//    }
-
-//    private void setUpRecording() {
-//        mediaRecorder = new MediaRecorder();
-//        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-//        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-//
-//        File file;
-//        if (Environment.getDataDirectory() != null) {
-//            file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ChatApp/Media");
-//            if (file.exists()) {
-//                file.mkdirs();
-//            }
-//            audioPath = file.getAbsolutePath() + File.separator + System.currentTimeMillis() + "3gp";
-//
-//            mediaRecorder.setOutputFile(audioPath);
-//        }
-//    }
-
-    private void sendRecordingMessage() {
         LayoutInflater inflater = LayoutInflater.from(MessageActivity.this);
         View view = inflater.inflate(R.layout.voice_option_layout ,null);
         TextView status = view.findViewById(R.id.txt_record_status);
@@ -476,9 +357,16 @@ public class MessageActivity extends AppCompatActivity {
                 .create();
 
         alertDialog.show();
-
+        stop.setClickable(false);
+        send.setClickable(false);
         start.setOnClickListener(v -> {
             try {
+                mediaRecorder = new MediaRecorder();
+                mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+
+                mediaRecorder.setOutputFile(audioFile);
                 mediaRecorder.prepare();
                 mediaRecorder.start();
             } catch (IOException e) {
@@ -486,7 +374,8 @@ public class MessageActivity extends AppCompatActivity {
             }
                 String status1 = "Audio recording...";
                 status.setText(status1);
-
+                start.setClickable(false);
+                send.setClickable(false);
         });
 
         stop.setOnClickListener(v -> {
@@ -494,8 +383,9 @@ public class MessageActivity extends AppCompatActivity {
                 mediaRecorder.reset();
                 mediaRecorder.release();
                 status.setText("Recording stopped");
+                start.setClickable(true);
+                send.setClickable(true);
             }
-
         });
 
         send.setOnClickListener(v -> {
@@ -864,31 +754,32 @@ public class MessageActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
+            //case PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
+            case Constaints.CAMERA_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                    getCameraImage();
                 } else {
                     Toast.makeText(this, "Approve permissions to open Pix ImagePicker", Toast.LENGTH_LONG).show();
                 }
+                break;
             }
-            case Constaints.RECORDING_REQUEST_CODE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (this.permissions.isEnableRecording(MessageActivity.this))
-                        recordButton.setListenForRecord(true);
-                    else this.permissions.isEnableRecording(MessageActivity.this);
-
+            case Constaints.RECORDING_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getRecordingMessage();
                 } else
                     Toast.makeText(this, "Recording permission denied", Toast.LENGTH_SHORT).show();
                 break;
-            case Constaints.STORAGE_REQUEST_CODE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    recordButton.setListenForRecord(true);
-                else
+            }
+            case Constaints.STORAGE_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getRecordingMessage();
+                } else {
                     Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show();
+                }
                 break;
+            }
         }
-
     }
 
     private void getCameraImage() {

@@ -92,7 +92,8 @@
                 android:id="@+id/btn_send_file"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@drawable/plus" />
+                android:background="@drawable/plus"
+                android:contentDescription="@string/todo" />
 
             <EditText
                 android:id="@+id/txt_message"
@@ -121,39 +122,6 @@
             android:contentDescription="@string/button_send"
             android:src="@drawable/ic_send" />
 
-<!--        <com.devlomi.record_view.RecordView-->
-<!--            android:id="@+id/recordView"-->
-<!--            android:layout_width="350dp"-->
-<!--            android:layout_height="40dp"-->
-<!--            android:visibility="gone"-->
-<!--            app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"-->
-<!--            app:slide_to_cancel_arrow_color="@color/black"-->
-<!--            app:slide_to_cancel_text="Slide to cancel" />-->
-
-<!--        <ImageButton-->
-<!--            android:id="@+id/recordButton"-->
-<!--            android:layout_width="40dp"-->
-<!--            android:layout_height="40dp"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_gravity="center|bottom"-->
-<!--            android:background="@drawable/background_micro"-->
-<!--            android:padding="2dp"-->
-<!--            android:scaleType="center"-->
-<!--            android:visibility="visible"-->
-<!--            android:src="@drawable/ic_baseline_mic_24" />-->
-
-<!--        <com.devlomi.record_view.RecordButton-->
-<!--            android:id="@+id/recordButton"-->
-<!--            android:layout_width="40dp"-->
-<!--            android:layout_height="40dp"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_gravity="center|bottom"-->
-<!--            android:background="@drawable/background_micro"-->
-<!--            android:padding="2dp"-->
-<!--            android:scaleType="center"-->
-<!--            android:tint="@color/white"-->
-<!--            android:visibility="visible"-->
-<!--            app:mic_icon="@drawable/ic_baseline_mic_24" />-->
 
     </RelativeLayout>
 
@@ -179,7 +147,7 @@
                 android:id="@+id/ic_camera"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
                 android:contentDescription="@string/todo"
                 android:src="@drawable/camera" />
 
@@ -187,7 +155,7 @@
                 android:id="@+id/ic_gallery"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
                 android:contentDescription="@string/todo"
                 android:src="@drawable/gallery" />
 
