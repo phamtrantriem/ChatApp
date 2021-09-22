@@ -7,8 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimaryDark">#425C59</color>
-    <color name="colorPrimary">#1d9c67</color>
+
+<!--    <color name="colorPrimaryDark">#425C59</color>-->
+    <color name="colorPrimaryDark">#00587c</color>
+<!--    <color name="colorPrimary">#1d9c67</color>-->
+    <color name="colorPrimary">#70d8ff</color>
+    <color name="colorPrimaryLight">#cdf1ff</color>
     <color name="whiteTrans">#aaa</color>
     <color name="white_10">#DDDDDD</color>
     <color name="red">#F44336</color>

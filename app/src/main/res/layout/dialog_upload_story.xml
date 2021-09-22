@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <ImageButton
+                android:id="@+id/btn_dialog_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_baseline_arrow_back_24"
+                android:contentDescription="@string/todo"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btn_dialog_back"
+                android:layout_centerHorizontal="true"
+                android:layout_marginVertical="20dp"
+                android:layout_marginTop="15dp"
+                android:text="@string/story"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/username"
+                android:layout_marginTop="20dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/txtContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider"
+                android:layout_marginTop="10dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="0dp"
+                android:text="@string/content"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/txtContentValue"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txtContent"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="0dp"
+                android:text="@string/this_is_description"
+                android:textSize="21sp" />
+
+            <TextView
+                android:id="@+id/txtInput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txtContentValue"
+                android:layout_marginTop="10dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="0dp"
+                android:text="@string/media"
+                android:textSize="20sp" />
+
+            <VideoView
+                android:id="@+id/videoViewInput"
+                android:layout_width="320dp"
+                android:layout_height="320dp"
+                android:layout_below="@id/txtInput"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:visibility="visible" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/videoViewInput"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btn_upload_gallery"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="30dp"
+                    android:background="@drawable/gallery" />
+
+                <ImageButton
+                    android:id="@+id/btn_upload"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/upload" />
+            </LinearLayout>
+
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

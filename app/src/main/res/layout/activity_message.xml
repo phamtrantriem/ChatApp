@@ -45,8 +45,8 @@
 
                 <ImageButton
                     android:id="@+id/btn_info"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/ic_baseline_info_24"
@@ -90,8 +90,8 @@
 
             <ImageButton
                 android:id="@+id/btn_send_file"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:background="@drawable/plus"
                 android:contentDescription="@string/todo" />
 
@@ -110,13 +110,14 @@
                 android:paddingTop="2dp"
                 android:paddingEnd="2dp"
                 android:paddingBottom="2dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/btn_send"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_alignParentEnd="true"
             android:background="@drawable/background_micro"
             android:contentDescription="@string/button_send"

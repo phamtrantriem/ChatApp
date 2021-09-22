@@ -2,12 +2,10 @@ package com.example.chatapp.Element;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +21,9 @@ import androidx.cardview.widget.CardView;
 
 import com.bumptech.glide.Glide;
 import com.example.chatapp.MainActivity;
-import com.example.chatapp.MessageActivity;
-import com.example.chatapp.Notification.Data;
-import com.example.chatapp.Object.Chat;
-import com.example.chatapp.Object.User;
+import com.example.chatapp.Model.User;
 import com.example.chatapp.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.google.firebase.FirebaseCommonRegistrar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -106,16 +100,29 @@ public class BottomSheetUser extends BottomSheetDialogFragment {
         });
         String currentUser = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         card_view_delete.setOnClickListener(v -> {
-
-
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("Confirmation").setMessage("Are you sure to delete this relationship?");
             builder.setCancelable(true);
             builder.setIcon(R.drawable.ic_baseline_delete_24);
             builder.setPositiveButton("Yes", (dialog, which) -> {
+                //delete from chatlist
                 DatabaseReference deleteChatListReference = FirebaseDatabase.getInstance().getReference("ChatsList");
                 Query query = deleteChatListReference.child(currentUser).orderByChild("id").equalTo(userID);
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot appleSnapshot: snapshot.getChildren()) {
+                            appleSnapshot.getRef().removeValue();
+                            startActivity(new Intent(getContext(), MainActivity.class));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
+
+                Query query0 = deleteChatListReference.child(userID).orderByChild("id").equalTo(currentUser);
+                query0.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot appleSnapshot: snapshot.getChildren()) {
@@ -126,28 +133,9 @@ public class BottomSheetUser extends BottomSheetDialogFragment {
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) { }
+                    public void onCancelled(@NonNull DatabaseError error) {}
                 });
-                DatabaseReference deleteChatReference = FirebaseDatabase.getInstance().getReference();
-                Query query1 = deleteChatReference.child("Chats");
-                query1.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            Chat chat = dataSnapshot.getValue(Chat.class);
-                            if (chat != null) {
-                                if (chat.getSender().equals(currentUser) && chat.getReceiver().equals(userID) || chat.getReceiver().equals(currentUser) && chat.getSender().equals(userID)) {
-                                    dataSnapshot.getRef().removeValue();
-                               }
-                            }
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
             });
 
             builder.setNegativeButton("Cancel", (dialog, which) -> {

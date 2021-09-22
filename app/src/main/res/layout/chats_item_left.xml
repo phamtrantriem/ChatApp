@@ -31,16 +31,23 @@
 
         <ImageView
             android:id="@+id/show_message_image"
-            android:layout_width="296dp"
+            android:layout_width="wrap_content"
             android:layout_height="177dp"
-            android:background="@drawable/background_message_left"
-            android:maxWidth="300dp"
-            android:maxHeight="200dp"
             android:padding="12dp"
+            android:background="@drawable/background_message_left"
             android:src="@drawable/gallery"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:contentDescription="@string/todo" />
+
+        <VideoView
+            android:id="@+id/show_message_video"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:padding="12dp"
+            android:visibility="visible" />
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/show_message_audio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,7 +71,8 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/background_message_left"
-                android:src="@drawable/ic_baseline_play_black" />
+                android:src="@drawable/ic_baseline_play_black"
+                android:contentDescription="@string/todo" />
         </LinearLayout>
     </LinearLayout>
 

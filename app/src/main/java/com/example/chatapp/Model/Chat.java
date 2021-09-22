@@ -1,6 +1,4 @@
-package com.example.chatapp.Object;
-
-import androidx.annotation.NonNull;
+package com.example.chatapp.Model;
 
 public class Chat {
     private String sender;

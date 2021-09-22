@@ -1,26 +1,22 @@
 package com.example.chatapp.Fragment;
 
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.example.chatapp.Adapter.UsersAdapter;
-import com.example.chatapp.Object.Chat;
-import com.example.chatapp.Object.ChatsList;
-import com.example.chatapp.Object.User;
+import com.example.chatapp.Model.ChatsList;
+import com.example.chatapp.Model.User;
 import com.example.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -76,11 +72,8 @@ public class ChatsFragment extends Fragment {
                     ChatsList chatsList = dataSnapshot.getValue(ChatsList.class);
                     sortedUserList.add(chatsList);
                 }
-                Log.d("LIST", sortedUserList.toString());
                 if (sortedUserList.size() > 1) {
                     Collections.sort(sortedUserList, (o1, o2) -> {
-                        Log.d("LIST1", o1.toString());
-                        Log.d("LIST2", o2.toString());
                         if (o1.getLastMessageDate() != null && o2.getLastMessageDate() != null) {
                             String[] str1 = o1.getLastMessageDate().split("\\s");
                             String[] str2 = o2.getLastMessageDate().split("\\s");

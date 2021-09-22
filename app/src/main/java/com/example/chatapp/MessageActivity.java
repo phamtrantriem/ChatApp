@@ -1,15 +1,11 @@
 package com.example.chatapp;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +16,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -30,6 +25,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -47,7 +43,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
@@ -58,12 +53,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.example.chatapp.Adapter.MessageAdapter;
-import com.example.chatapp.Object.Chat;
-import com.example.chatapp.Object.User;
-import com.example.chatapp.Service.Constaints;
+import com.example.chatapp.Model.Chat;
+import com.example.chatapp.Model.User;
+import com.example.chatapp.Service.Constants;
 import com.fxn.pix.Options;
 import com.fxn.pix.Pix;
-import com.fxn.utility.PermUtil;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -122,6 +116,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private Uri imageUri;
     private Uri audioUri;
+    private String extension;
     StorageTask<UploadTask.TaskSnapshot> uploadImageTask, uploadAudioTask;
 
     String userID;
@@ -129,7 +124,6 @@ public class MessageActivity extends AppCompatActivity {
     public static String filename = "recorder.3gp";
 
     String audioFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Environment.DIRECTORY_DCIM + File.separator + filename;
-    String audioPath;
 
     RecyclerView recyclerView;
 
@@ -140,8 +134,9 @@ public class MessageActivity extends AppCompatActivity {
             result -> {
                 int resultCode = result.getResultCode();
                 Intent data = result.getData();
-                if (resultCode == Constaints.RESULT_OK && data != null && data.getData() != null) {
+                if (resultCode == Constants.RESULT_OK && data != null && data.getData() != null) {
                     imageUri = data.getData();
+                    Log.d("MESSAGE_ACT_URI", imageUri.toString());
                     if (uploadImageTask != null && uploadImageTask.isInProgress()) {
                         Toast.makeText(getApplicationContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                     } else {
@@ -191,7 +186,6 @@ public class MessageActivity extends AppCompatActivity {
         }
 
 
-
         //get receiver
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         dReference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
@@ -202,7 +196,7 @@ public class MessageActivity extends AppCompatActivity {
                 assert user != null;
                 username.setText(user.getUsername());
                 if (user.getImageURL().equals("default")) {
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
+                    profile_image.setImageResource(R.drawable.ic_baseline_person_24);
                 } else {
                     Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
                 }
@@ -241,7 +235,7 @@ public class MessageActivity extends AppCompatActivity {
                     dialog_phone.setText(user.getPhone());
                     dialog_email.setText(user.getEmail());
                     if (user.getImageURL() != null && user.getImageURL().equals("default")) {
-                        dialog_image.setImageResource(R.mipmap.ic_launcher);
+                        dialog_image.setImageResource(R.drawable.ic_baseline_person_24);
                     } else {
                         Glide.with(getApplicationContext()).load(user.getImageURL()).into(dialog_image);
                     }
@@ -301,8 +295,8 @@ public class MessageActivity extends AppCompatActivity {
             if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 getCameraImage();
             } else {
-                String [] micPermissions = {Manifest.permission.CAMERA};
-                requestPermissions(micPermissions, Constaints.CAMERA_REQUEST_CODE);
+                String[] micPermissions = {Manifest.permission.CAMERA};
+                requestPermissions(micPermissions, Constants.CAMERA_REQUEST_CODE);
             }
 
         });
@@ -310,7 +304,7 @@ public class MessageActivity extends AppCompatActivity {
         //input gallery
         ic_gallery.setOnClickListener(v -> {
             Intent intent = new Intent();
-            intent.setType("image/*");
+            intent.setType("*/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
 
             someActivityResultLauncher.launch(intent);
@@ -323,12 +317,12 @@ public class MessageActivity extends AppCompatActivity {
                 if (checkSelfPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     getRecordingMessage();
                 } else {
-                    String [] micPermissions = {Manifest.permission.MANAGE_EXTERNAL_STORAGE};
-                    requestPermissions(micPermissions, Constaints.STORAGE_REQUEST_CODE);
+                    String[] micPermissions = {Manifest.permission.MANAGE_EXTERNAL_STORAGE};
+                    requestPermissions(micPermissions, Constants.STORAGE_REQUEST_CODE);
                 }
             } else {
-                String [] micPermissions = {Manifest.permission.RECORD_AUDIO};
-                requestPermissions(micPermissions, Constaints.RECORDING_REQUEST_CODE);
+                String[] micPermissions = {Manifest.permission.RECORD_AUDIO};
+                requestPermissions(micPermissions, Constants.RECORDING_REQUEST_CODE);
             }
 
             if (input_layout.getVisibility() == View.INVISIBLE) {
@@ -338,7 +332,6 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-
         checkTyping(userID);
         seenMessage(userID);
     }
@@ -346,7 +339,7 @@ public class MessageActivity extends AppCompatActivity {
     private void getRecordingMessage() {
 
         LayoutInflater inflater = LayoutInflater.from(MessageActivity.this);
-        View view = inflater.inflate(R.layout.voice_option_layout ,null);
+        View view = inflater.inflate(R.layout.voice_option_layout, null);
         TextView status = view.findViewById(R.id.txt_record_status);
         Button start = view.findViewById(R.id.btn_record_start);
         Button stop = view.findViewById(R.id.btn_record_stop);
@@ -372,10 +365,10 @@ public class MessageActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-                String status1 = "Audio recording...";
-                status.setText(status1);
-                start.setClickable(false);
-                send.setClickable(false);
+            String status1 = "Audio recording...";
+            status.setText(status1);
+            start.setClickable(false);
+            send.setClickable(false);
         });
 
         stop.setOnClickListener(v -> {
@@ -394,7 +387,6 @@ public class MessageActivity extends AppCompatActivity {
             if (audioUri != null) {
                 String s = String.valueOf(System.currentTimeMillis());
                 final StorageReference audioReference = sReference.child(s + ".3gp");
-
                 uploadAudioTask = audioReference.putFile(audioUri);
                 uploadAudioTask.continueWithTask(task -> {
                     if (!task.isSuccessful()) {
@@ -472,17 +464,19 @@ public class MessageActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Chat chat = dataSnapshot.getValue(Chat.class);
                     assert chat != null;
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userID)) {
-                        if (!chat.isSeen()) {
-                            HashMap<String, Object> hashMap = new HashMap<>();
-                            hashMap.put("seen", true);
+                    if (chat.getReceiver() != null && chat.getSender() != null) {
+                        if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userID)) {
+                            if (!chat.isSeen()) {
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("seen", true);
 
-                            LocalDateTime current = LocalDateTime.now();
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-                            String formatted = current.format(formatter);
+                                LocalDateTime current = LocalDateTime.now();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                                String formatted = current.format(formatter);
 
-                            hashMap.put("timeSeen", formatted);
-                            dataSnapshot.getRef().updateChildren(hashMap);
+                                hashMap.put("timeSeen", formatted);
+                                dataSnapshot.getRef().updateChildren(hashMap);
+                            }
                         }
                     }
                 }
@@ -536,12 +530,11 @@ public class MessageActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
-    private void readMessage(String myID, String userID, String imageURL) {
+    private void readMessage(String currentID, String userID, String imageURL) {
         chatList = new ArrayList<>();
 
         dReference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -552,14 +545,16 @@ public class MessageActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Chat chat = dataSnapshot.getValue(Chat.class);
                     assert chat != null;
-                    if ((chat.getReceiver().equals(myID) && chat.getSender().equals(userID)) ||
-                            (chat.getReceiver().equals(userID) && chat.getSender().equals(myID))) {
-                        chatList.add(chat);
+                    if (chat.getSender() != null && chat.getReceiver() != null) {
+                        if ((chat.getReceiver().equals(currentID) && chat.getSender().equals(userID)) ||
+                                (chat.getReceiver().equals(userID) && chat.getSender().equals(currentID))) {
+                            chatList.add(chat);
+                        }
                     }
-                    messageAdapter = new MessageAdapter(MessageActivity.this, chatList, imageURL, chat.getType());
-                    messageAdapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(messageAdapter);
                 }
+                messageAdapter = new MessageAdapter(MessageActivity.this, chatList, imageURL);
+                messageAdapter.notifyDataSetChanged();
+                recyclerView.setAdapter(messageAdapter);
             }
 
             @Override
@@ -648,7 +643,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void sendNotification(JSONObject to) {
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constaints.NOTIFICATION_URL, to, response -> {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constants.NOTIFICATION_URL, to, response -> {
             Log.d("NOTIFICATION", "send notification response: " + response);
 
         }, error -> {
@@ -657,7 +652,7 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
-                map.put("Authorization", "key=" + Constaints.AUTHORIZATION);
+                map.put("Authorization", "key=" + Constants.AUTHORIZATION);
                 map.put("Content-Type", "application/json");
                 return map;
             }
@@ -708,8 +703,8 @@ public class MessageActivity extends AppCompatActivity {
 //                    startService(intent);
 //                }
                 final ProgressDialog dialog = new ProgressDialog(MessageActivity.this);
-                    dialog.setMessage("Uploading...");
-                    dialog.show();
+                dialog.setMessage("Uploading...");
+                dialog.show();
                 for (String cameraImageURL : selectedImages) {
                     StorageReference camReference = FirebaseStorage.getInstance().getReference("images/message");
                     if (cameraImageURL != null) {
@@ -750,32 +745,45 @@ public class MessageActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             //case PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
-            case Constaints.CAMERA_REQUEST_CODE: {
+            case Constants.CAMERA_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                   getCameraImage();
+                    getCameraImage();
                 } else {
                     Toast.makeText(this, "Approve permissions to open Pix ImagePicker", Toast.LENGTH_LONG).show();
                 }
                 break;
             }
-            case Constaints.RECORDING_REQUEST_CODE: {
+            case Constants.RECORDING_REQUEST_CODE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getRecordingMessage();
                 } else
                     Toast.makeText(this, "Recording permission denied", Toast.LENGTH_SHORT).show();
                 break;
             }
-            case Constaints.STORAGE_REQUEST_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            case Constants.STORAGE_REQUEST_CODE: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getRecordingMessage();
+                    Log.d("PERMISSION1", "");
                 } else {
-                    Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show();
+                    if (Environment.isExternalStorageManager()) {
+                        getRecordingMessage();
+                        Log.d("PERMISSION2", String.valueOf(Environment.isExternalStorageManager()));
+                    } else {
+                        Log.d("PERMISSION3", "");
+                        Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show();
+                        //request for the permission
+                        Intent intent1 = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                        Uri uri1 = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri1);
+                        startActivity(intent1);
+                    }
                 }
                 break;
             }
@@ -801,8 +809,17 @@ public class MessageActivity extends AppCompatActivity {
         final ProgressDialog dialog = new ProgressDialog(MessageActivity.this);
         dialog.setMessage("Uploading...");
         dialog.show();
-        sReference = FirebaseStorage.getInstance().getReference("images/message");
         if (imageUri != null) {
+            extension = getFileExtension(imageUri);
+            Log.d("EXTENSION", extension);
+            if (extension.equals("mp4")) {
+                sReference = FirebaseStorage.getInstance().getReference("videos/message");
+            } else if (extension.equals("3gp")) {
+                sReference = FirebaseStorage.getInstance().getReference("audio/message");
+            } else {
+                sReference = FirebaseStorage.getInstance().getReference("images/message");
+            }
+
             String s = String.valueOf(System.currentTimeMillis());
             final StorageReference fileReference = sReference.child(s + "." + getFileExtension(imageUri));
 
@@ -817,14 +834,18 @@ public class MessageActivity extends AppCompatActivity {
                     Uri downloadUri = task.getResult();
                     assert downloadUri != null;
                     String mUri = downloadUri.toString();
+                    if (extension.equals("mp4")) {
+                        sendMessage(firebaseUser.getUid(), userID, mUri, "video");
+                    } else if (extension.equals("3gp")) {
+                        sendMessage(firebaseUser.getUid(), userID, mUri, "audio");
+                    } else {
+                        sendMessage(firebaseUser.getUid(), userID, mUri, "image");
+                    }
 
-                    sendMessage(firebaseUser.getUid(), userID, mUri, "image");
-
-                    dialog.dismiss();
                 } else {
                     Toast.makeText(getApplicationContext(), "Fails", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
                 }
+                dialog.dismiss();
             }).addOnFailureListener(e -> {
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 dialog.dismiss();

@@ -5,10 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -20,7 +17,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
@@ -30,14 +26,10 @@ import com.example.chatapp.Fragment.ChatsFragment;
 import com.example.chatapp.Fragment.ProfileFragment;
 import com.example.chatapp.Fragment.StoryFragment;
 import com.example.chatapp.Fragment.UsersFragment;
-import com.example.chatapp.Object.Chat;
-import com.example.chatapp.Object.User;
+import com.example.chatapp.Model.Chat;
+import com.example.chatapp.Model.User;
 import com.example.chatapp.Service.FirebaseNotificationService;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -47,9 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -133,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         if (user.getImageURL().equals("default")) {
-                            profile_image.setImageResource(R.mipmap.ic_launcher);
+                            profile_image.setImageResource(R.drawable.ic_baseline_person_24);
                         } else {
                             Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
                         }
@@ -169,15 +159,46 @@ public class MainActivity extends AppCompatActivity {
         setFragment(new ChatsFragment());
         bottomNavigation.setForceTint(true);
         bottomNavigation.setColored(true);
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                unRead = 0;
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Chat chat = dataSnapshot.getValue(Chat.class);
+                    assert chat != null;
+                    if (chat.getReceiver() != null) {
+                        if (chat.getReceiver().equals(firebaseUser.getUid())) {
+                            if (!chat.isSeen()) {
+                                unRead++;
+                            }
+                        }
+                    }
+                }
+
+                if (unRead != 0) {
+                    AHNotification notification = new AHNotification.Builder()
+                            .setText(String.valueOf(unRead))
+                            .setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorBottomNavigationNotification))
+                            .setTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
+                            .build();
+                    bottomNavigation.setNotification(notification, 0);
+                } else {
+                    AHNotification notification = new AHNotification.Builder()
+                            .setText("")
+                            .setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorBottomNavigationNotification))
+                            .setTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
+                            .build();
+                    bottomNavigation.setNotification(notification, 0);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
-        if (unRead>0) {
-            AHNotification notification = new AHNotification.Builder()
-                    .setText(String.valueOf(unRead))
-                    .setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorBottomNavigationNotification))
-                    .setTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
-                    .build();
-            bottomNavigation.setNotification(notification, 0);
-        }
         bottomNavigation.setOnTabSelectedListener((position, wasSelected) -> {
             selectedTab = position;
             if (selectedTab == 0) {setFragment(new ChatsFragment());}
@@ -186,8 +207,6 @@ public class MainActivity extends AppCompatActivity {
             if (selectedTab == 3) {setFragment(new ProfileFragment());}
             return true;
         });
-
-
 
         progressDialog.show();
         countDownTimer = new CountDownTimer(1500,1000) {
@@ -202,38 +221,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }.start();
 
-        reference = FirebaseDatabase.getInstance().getReference("Chats");
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-                unRead = 0;
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Chat chat = dataSnapshot.getValue(Chat.class);
-                    assert chat != null;
-                    if (chat.getReceiver().equals(firebaseUser.getUid())) {
-                        if (!chat.isSeen()) {
-                            unRead++;
-                        }
-                    }
-                }
-
-                if (unRead != 0) {
-                    viewPagerAdapter.addFragment(new ChatsFragment(), "(" + unRead + ")" + " Chats");
-                } else {
-                    viewPagerAdapter.addFragment(new ChatsFragment(), "Chats");
-                }
-
-                viewPagerAdapter.addFragment(new UsersFragment(), "Users");
-                viewPagerAdapter.addFragment(new ProfileFragment(), "Profile");
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
     private void setFragment(Fragment fragment) {
@@ -259,43 +246,8 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    static class ViewPagerAdapter extends FragmentPagerAdapter {
-
-        final private ArrayList<Fragment> fragments;
-        final private ArrayList<String> titles;
-
-        public ViewPagerAdapter(FragmentManager fm) {
-            super(fm);
-            this.fragments = new ArrayList<>();
-            this.titles = new ArrayList<>();
-        }
-
-
-        @NonNull
-        @Override
-        public Fragment getItem(int position) {
-            return fragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return fragments.size();
-        }
-
-        public void addFragment(Fragment fm, String title) {
-            fragments.add(fm);
-            titles.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return titles.get(position);
-        }
-    }
-
     private void status(String status) {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-        Log.d("MAIN_ACTIVITY", firebaseUser.getUid());
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("status", status);
 

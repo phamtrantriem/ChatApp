@@ -1,6 +1,4 @@
-package com.example.chatapp.Object;
-
-import java.util.Date;
+package com.example.chatapp.Model;
 
 public class ChatsList {
     private String id;

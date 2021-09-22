@@ -1,4 +1,4 @@
-package com.example.chatapp.Object;
+package com.example.chatapp.Model;
 
 import androidx.annotation.NonNull;
 

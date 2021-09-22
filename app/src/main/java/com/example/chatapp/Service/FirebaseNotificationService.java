@@ -1,7 +1,6 @@
 package com.example.chatapp.Service;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,14 +24,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class FirebaseNotificationService extends FirebaseMessagingService {
 
@@ -65,27 +62,30 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
     }
 
     private void sendRegistrationToServer(String token) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("token", token);
-                reference.updateChildren(map);
-            }
+        if (userID != null) {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("token", token);
+                    reference.updateChildren(map);
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                }
+            });
+        }
+
 
     }
 
     private void createNotification (String title, String message, String userID, String userURL, String chatId) {
 
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, Constaints.CHANNEL_ID);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, Constants.CHANNEL_ID);
         builder.setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
@@ -114,7 +114,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         intent.putExtra("userID", chatID);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        Notification notification = new NotificationCompat.Builder(this, Constaints.CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(this, Constants.CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setColor(ResourcesCompat.getColor(getResources(),R.color.colorPrimary, null))

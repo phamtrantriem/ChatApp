@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.chatapp.Element.BottomSheetUser;
 import com.example.chatapp.MessageActivity;
-import com.example.chatapp.Object.Chat;
-import com.example.chatapp.Object.User;
+import com.example.chatapp.Model.Chat;
+import com.example.chatapp.Model.User;
 import com.example.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -64,8 +64,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull UsersAdapter.ViewHolder holder, int position) {
         User user = userList.get(position);
         holder.username.setText(user.getUsername());
-        if (user.getImageURL().equals("default")) {
-            holder.profile_image.setImageResource(R.mipmap.ic_launcher);
+        if (user.getImageURL().equals("default") || user.getImageURL() == null) {
+            holder.profile_image.setImageResource(R.drawable.ic_baseline_person_24);
         } else {
             Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
         }
@@ -140,13 +140,15 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Chat chat = dataSnapshot.getValue(Chat.class);
                         assert chat != null;
-                        if (chat.getReceiver().equals(fUser.getUid()) && chat.getSender().equals(userID) ||
-                                chat.getReceiver().equals(userID) && chat.getSender().equals(fUser.getUid())) {
-                            lastMessage = chat.getMessage();
-                            userWithLastMessageID = chat.getSender();
-                            timeLastMessage = chat.getTimeSend().substring(0,5);
-                            isSeen = chat.isSeen();
-                            type = chat.getType();
+                        if (chat.getReceiver() != null) {
+                            if (chat.getReceiver().equals(fUser.getUid()) && chat.getSender().equals(userID) ||
+                                    chat.getReceiver().equals(userID) && chat.getSender().equals(fUser.getUid())) {
+                                lastMessage = chat.getMessage();
+                                userWithLastMessageID = chat.getSender();
+                                timeLastMessage = chat.getTimeSend().substring(0, 5);
+                                isSeen = chat.isSeen();
+                                type = chat.getType();
+                            }
                         }
                     }
                     if ("default".equals(lastMessage)) {
@@ -154,18 +156,32 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                         time_last_message.setText("");
                     } else {
                         if (userWithLastMessageID.equals(fUser.getUid()) && type != null) {
-                            if (type.equals("image")) {
-                                lastMessage = "You: Sent an image";
-                            } else if (type.equals("audio")) {
-                                lastMessage = "You: Sent a voice record";
-                            } else {
-                                lastMessage = "You: " + lastMessage;
+                            switch (type) {
+                                case "image":
+                                    lastMessage = "You: Sent an image";
+                                    break;
+                                case "audio":
+                                    lastMessage = "You: Sent a voice record";
+                                    break;
+                                case "video":
+                                    lastMessage = "You: Sent a voice video";
+                                    break;
+                                default:
+                                    lastMessage = "You: " + lastMessage;
+
+                                    break;
                             }
-                        } else if (type != null){
-                            if (type.equals("image")) {
-                                lastMessage = "Sent an image";
-                            } else if (type.equals("audio")) {
-                                lastMessage = "Sent a voice record";
+                        } else if (type != null) {
+                            switch (type) {
+                                case "image":
+                                    lastMessage = "Sent an image";
+                                    break;
+                                case "audio":
+                                    lastMessage = "Sent a voice record";
+                                    break;
+                                case "video":
+                                    lastMessage = "Sent a voice video";
+                                    break;
                             }
                             if (!isSeen) {
                                 username.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
@@ -182,7 +198,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
         });
     }
 }

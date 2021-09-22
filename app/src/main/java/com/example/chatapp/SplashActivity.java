@@ -34,15 +34,12 @@ public class SplashActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstallationTokenResult> task) {
-                        if(!task.isSuccessful()){
-                            return;
-                        }
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
+                FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(task -> {
+                    if(!task.isSuccessful()){
+                        return;
                     }
+                    // Get new Instance ID token
+                    String token = task.getResult().getToken();
                 });
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                 startActivity(intent);

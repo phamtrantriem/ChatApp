@@ -1,6 +1,6 @@
 package com.example.chatapp.Service;
 
-public interface Constaints {
+public interface Constants {
     int STORAGE_REQUEST_CODE = 1000;
     int CAMERA_REQUEST_CODE = 2000;
     int RECORDING_REQUEST_CODE = 3000;

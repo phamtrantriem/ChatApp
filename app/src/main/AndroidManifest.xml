@@ -11,11 +11,14 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
-    <application xmlns:tools="http://schemas.android.com/tools"
+    <application
         android:name=".MyApplication"
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
@@ -34,27 +37,29 @@
         <activity
             android:name=".ResetPasswordActivity"
             android:parentActivityName=".LoginActivity" />
-        <activity android:name=".MessageActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".MessageActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
             android:parentActivityName=".StartActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RegisterActivity"
             android:parentActivityName=".StartActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".StartActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".StartActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".Service.FirebaseNotificationService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGINH_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service android:name=".Service.SendMediaService" />

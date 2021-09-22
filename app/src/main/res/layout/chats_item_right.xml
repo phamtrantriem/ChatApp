@@ -4,11 +4,6 @@
     android:layout_height="wrap_content"
     android:padding="8dp">
 
-    <!--    <RelativeLayout-->
-    <!--        android:layout_width="300dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_alignParentEnd="true">-->
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
         android:layout_width="wrap_content"
@@ -19,8 +14,7 @@
         android:id="@+id/last_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/background_message_right">
+        android:layout_alignParentEnd="true">
 
         <TextView
             android:id="@+id/show_message"
@@ -36,19 +30,29 @@
 
         <ImageView
             android:id="@+id/show_message_image"
-            android:layout_width="296dp"
-            android:layout_height="177dp"
-            android:background="@drawable/background_message_right"
-            android:maxWidth="300dp"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:maxWidth="296dp"
             android:maxHeight="200dp"
             android:padding="12dp"
+            android:background="@drawable/background_message_right"
             android:src="@drawable/gallery"
+            android:visibility="visible"
+            android:contentDescription="@string/todo" />
+
+        <VideoView
+            android:id="@+id/show_message_video"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:padding="12dp"
             android:visibility="gone" />
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/show_message_audio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/background_message_right"
             android:orientation="horizontal">
 
             <ImageButton
@@ -58,7 +62,8 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="10dp"
                 android:background="@drawable/background_message_right"
-                android:src="@drawable/ic_baseline_play_white" />
+                android:src="@drawable/ic_baseline_play_white"
+                android:contentDescription="@string/todo" />
 
             <TextView
                 android:layout_width="wrap_content"

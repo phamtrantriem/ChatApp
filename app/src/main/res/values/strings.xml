@@ -38,4 +38,11 @@
     <string name="information">Information</string>
     <string name="back">Back</string>
     <string name="delete_conversation">Delete relationship</string>
+    <string name="delete_message">Delete message</string>
+    <string name="stop">Stop</string>
+    <string name="send">Send</string>
+    <string name="this_is_description">This is Description</string>
+    <string name="upload_story">Upload story</string>
+    <string name="media">Media</string>
+    <string name="content">Content</string>
 </resources>

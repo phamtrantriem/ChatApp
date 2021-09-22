@@ -15,10 +15,15 @@
             android:padding="10dp">
 
             <TextView
+                android:id="@+id/txt_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="10dp"
+                android:layout_toStartOf="@id/btn_logout"
                 android:text="@string/profile"
                 android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -27,7 +32,7 @@
                 android:layout_height="120dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@drawable/ic_baseline_person_24" />
 
             <TextView
                 android:id="@+id/username"
@@ -37,6 +42,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
                 android:text="@string/username"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
@@ -68,6 +74,7 @@
                 android:paddingStart="40dp"
                 android:paddingEnd="0dp"
                 android:text="@string/full_name"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="21sp"
                 android:textStyle="bold" />
 
@@ -91,6 +98,7 @@
                 android:paddingStart="40dp"
                 android:paddingEnd="0dp"
                 android:text="@string/email"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="21sp"
                 android:textStyle="bold" />
 
@@ -114,6 +122,7 @@
                 android:paddingStart="40dp"
                 android:paddingEnd="0dp"
                 android:text="@string/phone_number"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="21sp"
                 android:textStyle="bold" />
 
@@ -122,14 +131,15 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_alignParentEnd="true"
-                android:background="@drawable/ic_baseline_logout_24" />
+                android:background="@drawable/ic_baseline_logout_24"
+                android:contentDescription="@string/todo" />
 
             <Button
                 android:id="@+id/btn_upload_story"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:text="Upload story" />
+                android:text="@string/upload_story" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

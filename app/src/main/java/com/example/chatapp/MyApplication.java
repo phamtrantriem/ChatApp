@@ -8,7 +8,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.chatapp.Service.Constaints;
+import com.example.chatapp.Service.Constants;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MyApplication extends Application {
@@ -26,7 +26,7 @@ public class MyApplication extends Application {
         CharSequence name = getString(R.string.channel_name);
         String description = getString(R.string.channel_description);
         int importance = NotificationManager.IMPORTANCE_HIGH;
-        NotificationChannel channel = new NotificationChannel(Constaints.CHANNEL_ID, name, importance);
+        NotificationChannel channel = new NotificationChannel(Constants.CHANNEL_ID, name, importance);
         channel.setShowBadge(true);
         channel.enableLights(true);
         channel.enableVibration(true);

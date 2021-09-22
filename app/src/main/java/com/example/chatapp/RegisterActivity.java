@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.chatapp.Object.User;
 import com.example.chatapp.Service.FirebaseNotificationService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -87,7 +86,7 @@ public class RegisterActivity extends AppCompatActivity {
                 FirebaseMessaging.getInstance().getToken()
                         .addOnCompleteListener(task1 -> {
                             if (!task.isSuccessful()) {
-                                Log.w("MAIN_ACTIVITY", "Fetching FCM registration token failed", task.getException());
+                                Log.w("REGISTER_ACTIVITY", "Fetching FCM registration token failed", task.getException());
                                 return;
                             }
 
@@ -116,6 +115,8 @@ public class RegisterActivity extends AppCompatActivity {
                         startActivity(intent);
                         Toast.makeText(RegisterActivity.this, "Register successfully!!!", Toast.LENGTH_SHORT).show();
                         finish();
+                    } else {
+                        Log.d("ERROR", "");
                     }
                 });
             } else {
