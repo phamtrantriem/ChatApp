@@ -1,2 +1,2 @@
 # ChatApp
-An chat app android with Firebase
+An communitcation app android with Firebase
